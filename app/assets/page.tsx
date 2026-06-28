@@ -5,10 +5,10 @@ import { useAssets, useDeleteAsset, useCategories, useProjects } from '@/app/hoo
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading, Error } from '@/app/components';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Eye, Trash2, Plus, FileSpreadsheet, Printer } from 'lucide-react';
 
-export default function AssetsPage() {
+function AssetsContent() {
   const { user, isLoading: authLoading } = useProtectedRoute();
   const searchParams = useSearchParams();
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'));
@@ -237,5 +237,13 @@ export default function AssetsPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function AssetsPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AssetsContent />
+    </Suspense>
   );
 }
