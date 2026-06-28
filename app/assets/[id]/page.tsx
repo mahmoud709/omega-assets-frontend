@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableB
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Send, AlertTriangle, X } from 'lucide-react';
+import { ArrowLeft, Send, AlertTriangle, X, Hammer } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 export default function AssetDetailPage() {
@@ -18,10 +18,12 @@ export default function AssetDetailPage() {
 
   const { data: assetData, isLoading: assetLoading } = useAsset(assetId);
   const { data: historyData, isLoading: historyLoading } = useCustodyHistory(assetId);
+  const { data: mTasksData } = useMaintenanceTasks(assetId);
   const transferCustody = useTransferCustody();
 
   const asset = assetData?.asset;
   const history = historyData?.data || [];
+  const maintenanceTasks = mTasksData?.data || [];
 
   const [toProjectId, setToProjectId] = useState('');
   
@@ -361,6 +363,60 @@ export default function AssetDetailPage() {
                 </Card>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Maintenance History */}
+        {isAuthenticated && maintenanceTasks.length > 0 && (
+          <div className="mt-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2" dir="rtl">
+                  <Hammer className="w-5 h-5 text-blue-600" />
+                  سجل صيانة الأصل
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <Table>
+                  <TableHead>
+                    <TableRow className="text-right" dir="rtl">
+                      <TableCell header>تاريخ البلاغ</TableCell>
+                      <TableCell header>المشكلة</TableCell>
+                      <TableCell header>الحالة</TableCell>
+                      <TableCell header>تاريخ الانتهاء</TableCell>
+                      <TableCell header>التكلفة</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {maintenanceTasks.map((task: any) => (
+                      <TableRow key={task._id} className="text-right" dir="rtl">
+                        <TableCell className="font-medium text-slate-900">
+                          {new Date(task.scheduledDate).toLocaleDateString('ar-EG')}
+                        </TableCell>
+                        <TableCell className="text-slate-800 font-bold max-w-xs truncate" title={task.description}>
+                          {task.description}
+                        </TableCell>
+                        <TableCell>
+                          {task.status === 'completed' ? (
+                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">مكتمل</span>
+                          ) : task.status === 'in_progress' ? (
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">جاري العمل</span>
+                          ) : (
+                            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-bold">معلق</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-slate-600">
+                          {task.completedDate ? new Date(task.completedDate).toLocaleDateString('ar-EG') : '-'}
+                        </TableCell>
+                        <TableCell className="font-bold text-slate-900" dir="ltr">
+                          {task.cost !== undefined ? `${task.cost} ج.م` : '-'}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardBody>
+            </Card>
           </div>
         )}
       </div>

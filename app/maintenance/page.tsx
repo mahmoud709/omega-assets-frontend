@@ -16,7 +16,16 @@ export default function MaintenancePage() {
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
-      await updateStatus.mutateAsync({ id, data: { status: newStatus } });
+      let data: any = { status: newStatus };
+      if (newStatus === 'completed') {
+        const costStr = prompt('الرجاء إدخال تكلفة الصيانة (بالجنيه) أو اتركها فارغة إذا لم تكن هناك تكلفة:');
+        if (costStr === null) return; // User cancelled
+        const cost = parseFloat(costStr);
+        if (!isNaN(cost) && cost >= 0) {
+          data.cost = cost;
+        }
+      }
+      await updateStatus.mutateAsync({ id, data });
     } catch (error) {
       alert('حدث خطأ أثناء تحديث الحالة');
     }
