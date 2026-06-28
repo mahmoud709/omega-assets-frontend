@@ -69,22 +69,25 @@ export default function EmployeeCustodyReport() {
         <Card className="print:shadow-none print:border-none">
           <CardBody className="p-8 print:p-0">
             {/* Header */}
-            <div className="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8 text-right relative" dir="rtl">
-              <div className="w-1/3 z-10">
+            <div className="flex justify-between items-center border-b-2 border-slate-800 pb-6 mb-8" dir="rtl">
+              {/* Right Side - Title */}
+              <div className="w-1/3 text-right">
                 <h1 className="text-3xl font-black text-slate-900 mb-2">كشف عهدة موظف</h1>
-                <p className="text-slate-500 font-medium">إقرار استلام عهد شخصية / مشاريع</p>
+                <p className="text-slate-500 font-medium text-sm">إقرار استلام عهد شخصية / مشاريع</p>
               </div>
               
-              <div className="w-1/3 flex justify-center items-center absolute left-1/2 -translate-x-1/2 top-0">
+              {/* Center - Logo */}
+              <div className="w-1/3 flex justify-center items-center">
                 <img 
                   src="/logo.png" 
                   alt="Company Logo" 
-                  className="h-16 object-contain"
+                  className="h-20 object-contain"
                 />
               </div>
 
-              <div className="w-1/3 text-left z-10 mt-2">
-                <p className="text-slate-500 text-sm font-bold">{today}</p>
+              {/* Left Side - Date */}
+              <div className="w-1/3 text-left">
+                <p className="text-slate-500 font-bold">{today}</p>
               </div>
             </div>
 

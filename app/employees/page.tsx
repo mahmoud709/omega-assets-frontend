@@ -12,15 +12,21 @@ export default function EmployeesPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [projectId, setProjectId] = useState('');
   const [filterProjectId, setFilterProjectId] = useState('');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [employeesList, setEmployeesList] = useState([{ name: '', department: '' }]);
 
   const { data: projectsData } = useProjects(1, 100);
   const projects = projectsData?.data || [];
 
   const { data: employeesData, isLoading: employeesLoading } = useEmployees(
-    filterProjectId || (user?.role !== 'admin' ? user?.siteId : undefined)
+    filterProjectId || (user?.role !== 'admin' ? user?.siteId : undefined),
+    search || undefined,
+    page,
+    20
   );
   const employees = employeesData?.data || [];
+  const pagination = employeesData?.pagination || { total: 0, page: 1, pages: 1 };
 
   const createEmployee = useCreateEmployee();
 
@@ -77,20 +83,31 @@ export default function EmployeesPage() {
           </Button>
         </div>
 
-        {/* Project Filter */}
-        <div className="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex gap-4 items-center" dir="rtl">
-          <label className="font-bold text-slate-700 whitespace-nowrap">تصفية بالمشروع:</label>
-          <select
-            value={filterProjectId}
-            onChange={(e) => setFilterProjectId(e.target.value)}
-            className="w-full md:w-1/4 px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold bg-slate-50"
-            disabled={projects.length === 1 && !!user?.siteId}
-          >
-            <option value="">جميع المشاريع</option>
-            {projects.map((p: any) => (
-              <option key={p._id} value={p._id}>{p.name}</option>
-            ))}
-          </select>
+        {/* Filters */}
+        <div className="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between" dir="rtl">
+          <div className="flex gap-4 items-center w-full md:w-auto">
+            <label className="font-bold text-slate-700 whitespace-nowrap">تصفية بالمشروع:</label>
+            <select
+              value={filterProjectId}
+              onChange={(e) => { setFilterProjectId(e.target.value); setPage(1); }}
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold bg-slate-50"
+              disabled={projects.length === 1 && !!user?.siteId}
+            >
+              <option value="">جميع المشاريع</option>
+              {projects.map((p: any) => (
+                <option key={p._id} value={p._id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-full md:w-1/3">
+            <input
+              type="text"
+              placeholder="بحث باسم الموظف..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-900 bg-slate-50"
+            />
+          </div>
         </div>
 
         {showAddForm && (
@@ -203,6 +220,33 @@ export default function EmployeesPage() {
                   ))}
                 </TableBody>
               </Table>
+              
+              {/* Pagination */}
+              {pagination.total > 0 && (
+                <div className="mt-6 flex justify-between items-center print:hidden" dir="rtl">
+                  <span className="text-slate-700 font-medium">
+                    عرض {(page - 1) * 20 + 1} إلى {Math.min(page * 20, pagination.total)} من {pagination.total}
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      disabled={page >= pagination.pages}
+                      onClick={() => setPage(page + 1)}
+                      variant="secondary"
+                    >
+                      التالي
+                    </Button>
+                    <span className="px-4 py-2 font-medium text-slate-800">صفحة {page}</span>
+                    <Button
+                      disabled={page === 1}
+                      onClick={() => setPage(page - 1)}
+                      variant="secondary"
+                    >
+                      السابق
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
             ) : (
               <p className="text-slate-600 text-right font-medium">لا يوجد موظفين مسجلين حالياً</p>
             )}

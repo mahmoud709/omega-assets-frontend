@@ -347,12 +347,17 @@ export const useEmployee = (id: string) => {
   });
 };
 
-export const useEmployees = (projectId?: string) => {
+export const useEmployees = (projectId?: string, search?: string, page = 1, limit = 20) => {
   return useQuery({
-    queryKey: ['employees', projectId],
+    queryKey: ['employees', projectId, search, page, limit],
     queryFn: async () => {
-      const params = projectId ? `?projectId=${projectId}` : '';
-      const response = await api.get(`/employees${params}`);
+      const params = new URLSearchParams();
+      if (projectId) params.append('projectId', projectId);
+      if (search) params.append('search', search);
+      params.append('page', String(page));
+      params.append('limit', String(limit));
+      
+      const response = await api.get(`/employees?${params}`);
       return response.data;
     },
   });
