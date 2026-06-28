@@ -3,6 +3,7 @@
 import { useProtectedRoute, useRequireRole } from '@/app/hooks/useProtected';
 import { useAssets, useProjects } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Loading } from '@/app/components';
+import Link from 'next/link';
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -121,17 +122,19 @@ export default function ReportsPage() {
             </CardBody>
           </Card>
 
-          <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-all group cursor-pointer" onClick={() => window.location.href = '/maintenance'}>
-            <CardBody className="p-6 flex items-center justify-between">
-              <div>
-                <p className="text-slate-500 font-semibold mb-2">أعطال (تحتاج إصلاح)</p>
-                <p className="text-4xl font-black text-slate-800 group-hover:text-red-500 transition-colors">{conditionCount.needs_repair || 0}</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center">
-                <div className="w-6 h-6 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"></div>
-              </div>
-            </CardBody>
-          </Card>
+          <Link href="/maintenance" className="block">
+            <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-all group cursor-pointer h-full">
+              <CardBody className="p-6 flex items-center justify-between">
+                <div>
+                  <p className="text-slate-500 font-semibold mb-2">أعطال (تحتاج إصلاح)</p>
+                  <p className="text-4xl font-black text-slate-800 group-hover:text-red-500 transition-colors">{conditionCount.needs_repair || 0}</p>
+                </div>
+                <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"></div>
+                </div>
+              </CardBody>
+            </Card>
+          </Link>
         </div>
 
         {/* Charts */}
