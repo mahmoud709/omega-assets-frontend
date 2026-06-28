@@ -194,7 +194,8 @@ export default function EmployeesPage() {
         <Card>
           <CardBody>
             {employees.length > 0 ? (
-              <Table>
+              <>
+                <Table>
                 <TableHead>
                   <TableRow className="text-right" dir="rtl">
                     <TableCell header>اسم الموظف</TableCell>
@@ -246,7 +247,7 @@ export default function EmployeesPage() {
                   </div>
                 </div>
               )}
-            </div>
+              </>
             ) : (
               <p className="text-slate-600 text-right font-medium">لا يوجد موظفين مسجلين حالياً</p>
             )}
