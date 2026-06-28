@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/app/context/AuthContext';
+import { useAuth } from '@/app/context/auth';
 import { useAsset, useCustodyHistory, useTransferCustody, useEmployees, useProjects } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading, Error } from '@/app/components';
 import { useParams, useRouter } from 'next/navigation';
@@ -10,7 +10,8 @@ import { ArrowLeft, Send } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 export default function AssetDetailPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
   const params = useParams();
   const router = useRouter();
   const assetId = params.id as string;
