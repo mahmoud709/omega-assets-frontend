@@ -15,7 +15,7 @@ export default function EmployeeCustodyReport() {
 
   // Fetch up to 1000 assets for this custodian to ensure all show on report
   const { data: assetsData, isLoading: assetsLoading } = useAssets(
-    undefined, undefined, undefined, undefined, undefined, employeeId, 1, 1000
+    undefined, undefined, undefined, undefined, undefined, employeeId, undefined, 1, 1000
   );
   const assets = assetsData?.data || [];
 
