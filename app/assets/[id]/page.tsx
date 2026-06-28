@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/app/context/auth';
-import { useAsset, useCustodyHistory, useTransferCustody, useEmployees, useProjects, useReportIssue } from '@/app/hooks/useApi';
+import { useAsset, useCustodyHistory, useTransferCustody, useEmployees, useProjects, useReportIssue, useMaintenanceTasks } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading, Error } from '@/app/components';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -44,6 +44,9 @@ export default function AssetDetailPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportDescription, setReportDescription] = useState('');
   const reportIssueMutation = useReportIssue();
+
+  const { data: maintenanceData } = useMaintenanceTasks(asset?._id || 'SKIP');
+  const activeTask = maintenanceData?.data?.find((t: any) => t.status === 'pending' || t.status === 'in_progress');
 
   if (assetLoading || historyLoading) return <Loading />;
   if (isAuthenticated && (employeesLoading || projectsLoading)) return <Loading />;
@@ -98,12 +101,29 @@ export default function AssetDetailPage() {
             {/* Main Asset Info */}
             <div className="lg:col-span-2">
               {asset.condition === 'needs_repair' && (
-                <div className="mb-6 bg-red-100 border-2 border-red-500 text-red-800 px-6 py-4 rounded-xl flex items-center gap-4 shadow-sm" dir="rtl">
-                  <AlertTriangle className="w-10 h-10 text-red-600 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-bold text-xl">تحذير: هذا الأصل مُعطل حالياً!</h3>
-                    <p className="font-medium mt-1">تم الإبلاغ عن وجود مشكلة في هذه العهدة وهي الآن قيد الصيانة. يرجى الحذر وعدم استخدامه.</p>
+                <div className="mb-6 bg-red-100 border-2 border-red-500 text-red-800 px-6 py-4 rounded-xl shadow-sm" dir="rtl">
+                  <div className="flex items-center gap-4 mb-3">
+                    <AlertTriangle className="w-10 h-10 text-red-600 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-bold text-xl">تحذير: هذا الأصل مُعطل حالياً!</h3>
+                      <p className="font-medium mt-1 text-red-700">هذه العهدة تحت الصيانة، يرجى عدم استخدامها.</p>
+                    </div>
                   </div>
+                  
+                  {activeTask && (
+                    <div className="bg-white/60 p-4 rounded-lg border border-red-200 mt-2 flex justify-between items-center">
+                      <div>
+                        <p className="text-sm text-red-900 font-bold mb-1">تفاصيل العطل:</p>
+                        <p className="text-red-800 font-medium">{activeTask.description}</p>
+                      </div>
+                      <div className="text-center bg-red-50 px-4 py-2 rounded-lg border border-red-200">
+                        <p className="text-xs text-red-600 font-bold mb-1">حالة البلاغ</p>
+                        <p className="font-bold text-red-800">
+                          {activeTask.status === 'in_progress' ? 'جاري العمل 🔨' : 'قيد الانتظار ⏳'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               <Card>

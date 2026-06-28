@@ -212,6 +212,7 @@ export const useMaintenanceTasks = (assetId?: string, status?: string) => {
       const response = await api.get(`/maintenance?${params}`);
       return response.data;
     },
+    enabled: assetId !== 'SKIP',
   });
 };
 
