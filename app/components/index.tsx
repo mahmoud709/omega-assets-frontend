@@ -109,23 +109,28 @@ export function TableBody({ children }: TableBodyProps) {
 interface TableRowProps {
   children: ReactNode;
   className?: string;
+  dir?: string;
+  onClick?: () => void;
 }
 
-export function TableRow({ children, className = '' }: TableRowProps) {
-  return <tr className={`border-b border-gray-200 hover:bg-gray-50 ${className}`}>{children}</tr>;
+export function TableRow({ children, className = '', dir, onClick }: TableRowProps) {
+  return <tr dir={dir} onClick={onClick} className={`border-b border-gray-200 hover:bg-gray-50 ${className}`}>{children}</tr>;
 }
 
 interface TableCellProps {
-  children: ReactNode;
+  children?: ReactNode;
   header?: boolean;
   className?: string;
+  colSpan?: number;
+  dir?: string;
 }
 
-export function TableCell({ children, header = false, className = '' }: TableCellProps) {
+export function TableCell({ children, header = false, className = '', colSpan, dir }: TableCellProps) {
   const cellClass = header
     ? 'px-6 py-3 text-right text-sm font-semibold text-gray-700'
     : 'px-6 py-3 text-right text-sm text-gray-700';
-  return <td className={`${cellClass} ${className}`}>{children}</td>;
+  if (header) return <th dir={dir} colSpan={colSpan} className={`${cellClass} ${className}`}>{children}</th>;
+  return <td dir={dir} colSpan={colSpan} className={`${cellClass} ${className}`}>{children}</td>;
 }
 
 interface LoadingProps {

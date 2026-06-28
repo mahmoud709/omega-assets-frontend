@@ -66,7 +66,7 @@ export default function PrintLabelsPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 print:grid-cols-3 gap-6 print:gap-4 text-right" dir="rtl">
           {allAssets.length > 0 ? (
             allAssets.map((asset: any) => {
-              const qrValue = `العهدة: ${asset.name}\nالمسئول: ${asset.currentCustodianId?.fullName || asset.custodianName || 'المخزن'}\nرقم النظام: ${asset.systemId}`;
+              const qrValue = `${typeof window !== 'undefined' ? window.location.origin : ''}/assets/${asset._id}`;
               
               return (
                 <div key={asset._id} className="border-2 border-dashed border-slate-300 p-4 rounded flex flex-col items-center break-inside-avoid text-center">
