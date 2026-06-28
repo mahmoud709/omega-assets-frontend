@@ -106,7 +106,7 @@ export default function AssetDetailPage() {
                     </div>
                     <div>
                       <p className="text-sm text-slate-500 font-medium mb-1">تكلفة الشراء</p>
-                      <p className="text-lg font-bold text-slate-900">${asset.purchaseCost?.toFixed(2) || '0.00'}</p>
+                      <p className="text-lg font-bold text-slate-900">EGP {asset.purchaseCost?.toFixed(2) || '0.00'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-slate-500 font-medium mb-1">المورد</p>
