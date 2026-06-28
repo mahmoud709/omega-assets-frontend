@@ -3,11 +3,12 @@ import React, { ReactNode } from 'react';
 interface CardProps {
   children: ReactNode;
   className?: string;
+  dir?: string;
 }
 
-export function Card({ children, className = '' }: CardProps) {
+export function Card({ children, className = '', dir }: CardProps) {
   return (
-    <div className={`bg-white rounded-lg shadow p-6 ${className}`}>
+    <div dir={dir} className={`bg-white rounded-lg shadow p-6 ${className}`}>
       {children}
     </div>
   );
@@ -16,28 +17,31 @@ export function Card({ children, className = '' }: CardProps) {
 interface CardHeaderProps {
   children: ReactNode;
   className?: string;
+  dir?: string;
 }
 
-export function CardHeader({ children, className = '' }: CardHeaderProps) {
-  return <div className={`mb-4 border-b pb-4 ${className}`}>{children}</div>;
+export function CardHeader({ children, className = '', dir }: CardHeaderProps) {
+  return <div dir={dir} className={`mb-4 border-b pb-4 ${className}`}>{children}</div>;
 }
 
 interface CardTitleProps {
   children: ReactNode;
   className?: string;
+  dir?: string;
 }
 
-export function CardTitle({ children, className = '' }: CardTitleProps) {
-  return <h2 className={`text-xl font-bold text-gray-800 ${className}`}>{children}</h2>;
+export function CardTitle({ children, className = '', dir }: CardTitleProps) {
+  return <h2 dir={dir} className={`text-xl font-bold text-gray-800 ${className}`}>{children}</h2>;
 }
 
 interface CardBodyProps {
   children: ReactNode;
   className?: string;
+  dir?: string;
 }
 
-export function CardBody({ children, className = '' }: CardBodyProps) {
-  return <div className={className}>{children}</div>;
+export function CardBody({ children, className = '', dir }: CardBodyProps) {
+  return <div dir={dir} className={className}>{children}</div>;
 }
 
 interface ButtonProps {
@@ -47,6 +51,7 @@ interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'danger' | 'success';
   className?: string;
   type?: 'button' | 'submit' | 'reset';
+  title?: string;
 }
 
 export function Button({
@@ -56,6 +61,7 @@ export function Button({
   variant = 'primary',
   className = '',
   type = 'button',
+  title,
 }: ButtonProps) {
   const baseStyles = 'px-4 py-2 rounded font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed';
   const variants = {
@@ -70,6 +76,7 @@ export function Button({
       type={type}
       onClick={onClick}
       disabled={disabled}
+      title={title}
       className={`${baseStyles} ${variants[variant]} ${className}`}
     >
       {children}
@@ -80,11 +87,12 @@ export function Button({
 interface TableProps {
   children: ReactNode;
   className?: string;
+  dir?: string;
 }
 
-export function Table({ children, className = '' }: TableProps) {
+export function Table({ children, className = '', dir }: TableProps) {
   return (
-    <div className={`overflow-x-auto ${className}`}>
+    <div dir={dir} className={`overflow-x-auto ${className}`}>
       <table className="min-w-full border-collapse">{children}</table>
     </div>
   );
@@ -92,10 +100,12 @@ export function Table({ children, className = '' }: TableProps) {
 
 interface TableHeadProps {
   children: ReactNode;
+  className?: string;
+  dir?: string;
 }
 
-export function TableHead({ children }: TableHeadProps) {
-  return <thead className="bg-gray-100 border-b-2 border-gray-300">{children}</thead>;
+export function TableHead({ children, className = '', dir }: TableHeadProps) {
+  return <thead dir={dir} className={`bg-gray-100 border-b-2 border-gray-300 ${className}`}>{children}</thead>;
 }
 
 interface TableBodyProps {
