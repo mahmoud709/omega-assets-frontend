@@ -63,6 +63,15 @@ export default function Navbar() {
                 )}
                 {user.role === 'admin' && (
                   <Link
+                    href="/maintenance"
+                    className="flex items-center gap-2 hover:text-blue-400 transition"
+                  >
+                    <FolderOpen className="w-4 h-4" />
+                    طلبات الصيانة
+                  </Link>
+                )}
+                {user.role === 'admin' && (
+                  <Link
                     href="/users"
                     className="flex items-center gap-2 hover:text-blue-400 transition"
                   >
@@ -120,6 +129,11 @@ export default function Navbar() {
             {user.role === 'admin' && (
               <Link href="/reports" className="block px-2 py-2 hover:bg-gray-800 rounded">
                 التقارير
+              </Link>
+            )}
+            {user.role === 'admin' && (
+              <Link href="/maintenance" className="block px-2 py-2 hover:bg-gray-800 rounded">
+                طلبات الصيانة
               </Link>
             )}
             {user.role === 'admin' && (

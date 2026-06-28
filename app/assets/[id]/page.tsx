@@ -207,41 +207,42 @@ export default function AssetDetailPage() {
 
             {/* QR Code & Transfer & Report */}
             <div className="space-y-6">
-              {/* Report Issue Button (Public) */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-right text-orange-600 flex items-center justify-end gap-2">
-                    الإبلاغ عن مشكلة <AlertTriangle className="w-5 h-5" />
-                  </CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <p className="text-sm text-slate-500 text-right mb-4" dir="rtl">
-                    هل يوجد عطل أو تلف في هذا الأصل؟ يمكنك الإبلاغ عنه فوراً ليصل للإدارة.
-                  </p>
-                  <button
-                    onClick={() => setShowReportModal(true)}
-                    className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors shadow-md shadow-orange-500/30"
-                  >
-                    تقديم بلاغ صيانة
-                  </button>
-                </CardBody>
-              </Card>
-
               {isAuthenticated && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-right" >رمز الاستجابة السريعة (QR)</CardTitle>
-                  </CardHeader>
-                  <CardBody className="flex justify-center bg-white p-4 rounded-xl border border-slate-100">
-                    {asset && (
-                      <QRCode 
-                        value={`${typeof window !== 'undefined' ? window.location.origin : ''}/assets/${asset._id}`} 
-                        size={200} 
-                        level="H" 
-                      />
-                    )}
-                  </CardBody>
-                </Card>
+                <>
+                  {/* Report Issue Button */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-right text-orange-600 flex items-center justify-end gap-2">
+                        الإبلاغ عن مشكلة <AlertTriangle className="w-5 h-5" />
+                      </CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                      <p className="text-sm text-slate-500 text-right mb-4" dir="rtl">
+                        هل يوجد عطل أو تلف في هذا الأصل؟ يمكنك الإبلاغ عنه فوراً ليصل للإدارة.
+                      </p>
+                      <button
+                        onClick={() => setShowReportModal(true)}
+                        className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors shadow-md shadow-orange-500/30"
+                      >
+                        تقديم بلاغ صيانة
+                      </button>
+                    </CardBody>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-right" >رمز الاستجابة السريعة (QR)</CardTitle>
+                    </CardHeader>
+                    <CardBody className="flex justify-center bg-white p-4 rounded-xl border border-slate-100">
+                      {asset && (
+                        <QRCode 
+                          value={`${typeof window !== 'undefined' ? window.location.origin : ''}/assets/${asset._id}`} 
+                          size={200} 
+                          level="H" 
+                        />
+                      )}
+                    </CardBody>
+                  </Card>
               )}
 
               {isAuthenticated && (

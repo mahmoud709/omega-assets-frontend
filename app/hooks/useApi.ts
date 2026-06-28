@@ -209,6 +209,19 @@ export const useMaintenanceTasks = (assetId?: string, status?: string) => {
   });
 };
 
+export const useUpdateMaintenanceStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const response = await api.put(`/maintenance/${id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance'] });
+    },
+  });
+};
+
 export const useDueMaintenance = () => {
   return useQuery({
     queryKey: ['maintenance-due'],
