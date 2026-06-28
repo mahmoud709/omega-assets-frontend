@@ -188,10 +188,16 @@ export const useTransferCustody = () => {
 };
 
 export const useReportIssue = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: any) => {
       const response = await api.post('/maintenance/report', data);
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asset'] });
+      queryClient.invalidateQueries({ queryKey: ['assets'] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance'] });
     },
   });
 };
@@ -218,6 +224,8 @@ export const useUpdateMaintenanceStatus = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance'] });
+      queryClient.invalidateQueries({ queryKey: ['asset'] });
+      queryClient.invalidateQueries({ queryKey: ['assets'] });
     },
   });
 };
