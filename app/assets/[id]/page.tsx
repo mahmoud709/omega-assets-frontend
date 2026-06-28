@@ -112,6 +112,14 @@ export default function AssetDetailPage() {
                       <p className="text-sm text-slate-500 font-medium mb-1">المورد</p>
                       <p className="text-lg font-bold text-slate-900">{asset.vendor || 'غير متوفر'}</p>
                     </div>
+                    {asset.purchaseDate && (
+                      <div>
+                        <p className="text-sm text-slate-500 font-medium mb-1">تاريخ الشراء</p>
+                        <p className="text-lg font-bold text-slate-900">
+                          {new Date(asset.purchaseDate).toLocaleDateString('ar-EG')}
+                        </p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm text-slate-500 font-medium mb-1">العهدة الحالية (المسؤول)</p>
                       <p className="text-lg font-bold text-slate-900">
