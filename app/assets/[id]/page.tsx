@@ -41,7 +41,8 @@ export default function AssetDetailPage() {
   const [toUserName, setToUserName] = useState('');
   const [transferNotes, setTransferNotes] = useState('');
 
-  if (assetLoading || historyLoading || employeesLoading || projectsLoading) return <Loading />;
+  if (assetLoading || historyLoading) return <Loading />;
+  if (isAuthenticated && (employeesLoading || projectsLoading)) return <Loading />;
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
