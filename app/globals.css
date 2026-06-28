@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-cairo), Arial, Helvetica, sans-serif;
+}
+
+/* Fix input colors to make sure text is readable, especially when disabled */
+input, select, textarea {
+  color: #111827 !important; /* text-gray-900 */
+}
+
+input:disabled, select:disabled, textarea:disabled {
+  background-color: #f3f4f6 !important; /* bg-gray-100 */
+  color: #111827 !important; /* text-gray-900 to ensure readability */
+  opacity: 1 !important; /* prevent browser from making it transparent/hard to read */
+  -webkit-text-fill-color: #111827 !important; /* Fix for Safari/Chrome */
+  border-color: #d1d5db !important; /* border-gray-300 */
+  cursor: not-allowed;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #6b7280 !important; /* text-gray-500 */
+}
