@@ -1,6 +1,6 @@
 'use client';
 
-import { useProtectedRoute } from '@/app/hooks/useProtected';
+import { useAuth } from '@/app/context/AuthContext';
 import { useAsset, useCustodyHistory, useTransferCustody, useEmployees, useProjects } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading, Error } from '@/app/components';
 import { useParams, useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import { ArrowLeft, Send } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 export default function AssetDetailPage() {
-  const { user, isLoading: authLoading } = useProtectedRoute();
+  const { user, isAuthenticated } = useAuth();
   const params = useParams();
   const router = useRouter();
   const assetId = params.id as string;
@@ -40,7 +40,7 @@ export default function AssetDetailPage() {
   const [toUserName, setToUserName] = useState('');
   const [transferNotes, setTransferNotes] = useState('');
 
-  if (authLoading || assetLoading || historyLoading || employeesLoading || projectsLoading) return <Loading />;
+  if (assetLoading || historyLoading || employeesLoading || projectsLoading) return <Loading />;
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +63,12 @@ export default function AssetDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Logo Section */}
+        <div className="flex justify-center mb-8">
+          <img src="/logo.png" alt="Omega Logo" className="h-20 object-contain" />
+        </div>
+
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-6"
@@ -188,7 +194,8 @@ export default function AssetDetailPage() {
                 </CardBody>
               </Card>
 
-              <Card>
+              {isAuthenticated && (
+                <Card>
                   <CardHeader>
                     <CardTitle className="text-right" >أمر نقل (عهدة / مشروع)</CardTitle>
                   </CardHeader>
@@ -270,7 +277,8 @@ export default function AssetDetailPage() {
                       </form>
                     )}
                   </CardBody>
-              </Card>
+                </Card>
+              )}
             </div>
           </div>
         )}

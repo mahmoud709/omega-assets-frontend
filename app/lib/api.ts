@@ -24,7 +24,10 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/auth/login';
+      // Don't redirect on public QR pages
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/assets/')) {
+        window.location.href = '/auth/login';
+      }
     }
     return Promise.reject(error);
   }
