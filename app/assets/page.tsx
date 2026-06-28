@@ -264,7 +264,7 @@ function AssetsContent() {
                     </Button>
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
               <p className="text-slate-600 font-medium">لم يتم العثور على أصول</p>
             )}
