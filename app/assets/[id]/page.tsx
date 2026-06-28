@@ -64,12 +64,6 @@ export default function AssetDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Logo Section */}
-        <div className="flex justify-center mb-8">
-          <img src="/logo.png" alt="Omega Logo" className="h-20 object-contain" />
-        </div>
-
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-6"

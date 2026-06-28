@@ -73,7 +73,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-4">
             {user && (
-              <>
+              <div className="hidden md:flex items-center gap-4">
                 <span className="text-sm text-gray-300">{user.fullName}</span>
                 <button
                   onClick={logout}
@@ -82,7 +82,7 @@ export default function Navbar() {
                   <LogOut className="w-4 h-4" />
                   تسجيل الخروج
                 </button>
-              </>
+              </div>
             )}
             <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
               <Menu className="w-6 h-6" />
@@ -92,25 +92,35 @@ export default function Navbar() {
 
         {isOpen && user && (
           <div className="md:hidden pb-4 flex flex-col gap-2">
-            <Link href="/dashboard" className="block px-2 py-1 hover:text-blue-400">
+            <div className="flex items-center justify-between px-2 py-3 border-b border-gray-700 mb-2">
+              <span className="text-sm text-gray-300 font-medium">{user.fullName}</span>
+              <button
+                onClick={logout}
+                className="flex items-center gap-2 bg-red-600 px-3 py-1.5 text-sm rounded hover:bg-red-700 transition"
+              >
+                <LogOut className="w-4 h-4" />
+                خروج
+              </button>
+            </div>
+            <Link href="/dashboard" className="block px-2 py-2 hover:bg-gray-800 rounded">
               الرئيسية
             </Link>
-            <Link href="/assets" className="block px-2 py-1 hover:text-blue-400">
+            <Link href="/assets" className="block px-2 py-2 hover:bg-gray-800 rounded">
               الأصول
             </Link>
-            <Link href="/projects" className="block px-2 py-1 hover:text-blue-400">
+            <Link href="/projects" className="block px-2 py-2 hover:bg-gray-800 rounded">
               المشاريع
             </Link>
-            <Link href="/employees" className="block px-2 py-1 hover:text-blue-400">
+            <Link href="/employees" className="block px-2 py-2 hover:bg-gray-800 rounded">
               الموظفين
             </Link>
             {user.role === 'admin' && (
-              <Link href="/reports" className="block px-2 py-1 hover:text-blue-400">
+              <Link href="/reports" className="block px-2 py-2 hover:bg-gray-800 rounded">
                 التقارير
               </Link>
             )}
             {user.role === 'admin' && (
-              <Link href="/users" className="block px-2 py-1 hover:text-blue-400">
+              <Link href="/users" className="block px-2 py-2 hover:bg-gray-800 rounded">
                 المستخدمين
               </Link>
             )}
