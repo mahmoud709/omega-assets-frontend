@@ -97,6 +97,15 @@ export default function AssetDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Asset Info */}
             <div className="lg:col-span-2">
+              {asset.condition === 'needs_repair' && (
+                <div className="mb-6 bg-red-100 border-2 border-red-500 text-red-800 px-6 py-4 rounded-xl flex items-center gap-4 shadow-sm" dir="rtl">
+                  <AlertTriangle className="w-10 h-10 text-red-600 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-bold text-xl">تحذير: هذا الأصل مُعطل حالياً!</h3>
+                    <p className="font-medium mt-1">تم الإبلاغ عن وجود مشكلة في هذه العهدة وهي الآن قيد الصيانة. يرجى الحذر وعدم استخدامه.</p>
+                  </div>
+                </div>
+              )}
               <Card>
                 <CardHeader>
                   <CardTitle>{asset.name}</CardTitle>
