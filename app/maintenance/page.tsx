@@ -1,6 +1,6 @@
 'use client';
 
-import { useProtectedRoute } from '@/app/hooks/useProtected';
+import { useRequireRole } from '@/app/hooks/useProtected';
 import { useMaintenanceTasks, useUpdateMaintenanceStatus } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Loading } from '@/app/components';
 import { CheckCircle, AlertTriangle, Clock, Hammer, XCircle } from 'lucide-react';
@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 export default function MaintenancePage() {
-  const { user, isLoading: authLoading } = useProtectedRoute(['admin', 'site_manager']);
+  const { user, isLoading: authLoading } = useRequireRole(['admin', 'site_manager']);
   
   const [filter, setFilter] = useState('');
   const { data: tasksData, isLoading: tasksLoading } = useMaintenanceTasks(undefined, filter);
