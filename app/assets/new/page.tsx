@@ -22,7 +22,7 @@ export default function NewAssetPage() {
 
   // Dynamic array of assets to be created
   const [assetsList, setAssetsList] = useState([
-    { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '' }
+    { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '' }
   ]);
 
   const bulkCreateAssets = useBulkCreateAssets();
@@ -51,7 +51,7 @@ export default function NewAssetPage() {
   const addAssetRow = () => {
     setAssetsList([
       ...assetsList,
-      { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '' }
+      { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '' }
     ]);
   };
 
@@ -180,7 +180,7 @@ export default function NewAssetPage() {
                       </button>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {/* Category */}
                       <div className="space-y-2 lg:col-span-1">
                         <label className="block text-sm font-semibold text-slate-700">
@@ -302,6 +302,35 @@ export default function NewAssetPage() {
                           value={asset.purchaseDate}
                           onChange={(e) => handleAssetChange(index, 'purchaseDate', e.target.value)}
                           className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+                        />
+                      </div>
+
+                      {/* Vendor */}
+                      <div className="space-y-2 lg:col-span-1">
+                        <label className="block text-sm font-semibold text-slate-700">
+                          المورد (اختياري)
+                        </label>
+                        <input
+                          type="text"
+                          value={asset.vendor || ''}
+                          onChange={(e) => handleAssetChange(index, 'vendor', e.target.value)}
+                          placeholder="اسم المورد"
+                          className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold placeholder:text-slate-400 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+                        />
+                      </div>
+
+                      {/* Purchase Cost */}
+                      <div className="space-y-2 lg:col-span-1">
+                        <label className="block text-sm font-semibold text-slate-700">
+                          تكلفة الشراء (اختياري)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={asset.purchaseCost || ''}
+                          onChange={(e) => handleAssetChange(index, 'purchaseCost', e.target.value)}
+                          placeholder="مثال: 5000"
+                          className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold placeholder:text-slate-400 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
                         />
                       </div>
                     </div>
