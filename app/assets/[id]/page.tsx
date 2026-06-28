@@ -174,20 +174,22 @@ export default function AssetDetailPage() {
 
             {/* QR Code & Transfer */}
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-right" >رمز الاستجابة السريعة (QR)</CardTitle>
-                </CardHeader>
-                <CardBody className="flex justify-center bg-white p-4 rounded-xl border border-slate-100">
-                  {asset && (
-                    <QRCode 
-                      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/assets/${asset._id}`} 
-                      size={200} 
-                      level="H" 
-                    />
-                  )}
-                </CardBody>
-              </Card>
+              {isAuthenticated && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-right" >رمز الاستجابة السريعة (QR)</CardTitle>
+                  </CardHeader>
+                  <CardBody className="flex justify-center bg-white p-4 rounded-xl border border-slate-100">
+                    {asset && (
+                      <QRCode 
+                        value={`${typeof window !== 'undefined' ? window.location.origin : ''}/assets/${asset._id}`} 
+                        size={200} 
+                        level="H" 
+                      />
+                    )}
+                  </CardBody>
+                </Card>
+              )}
 
               {isAuthenticated && (
                 <Card>

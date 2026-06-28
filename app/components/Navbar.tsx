@@ -9,6 +9,9 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
+  // Hide the Navbar completely for unauthenticated visitors (e.g. public QR scans)
+  if (!user) return null;
+
   return (
     <nav className="bg-gray-900 text-white shadow-lg print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
