@@ -187,6 +187,15 @@ export const useTransferCustody = () => {
   });
 };
 
+export const useReportIssue = () => {
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.post('/maintenance/report', data);
+      return response.data;
+    },
+  });
+};
+
 export const useMaintenanceTasks = (assetId?: string, status?: string) => {
   return useQuery({
     queryKey: ['maintenance', assetId, status],

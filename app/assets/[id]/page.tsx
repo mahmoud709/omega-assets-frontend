@@ -1,12 +1,12 @@
 'use client';
 
 import { useAuth } from '@/app/context/auth';
-import { useAsset, useCustodyHistory, useTransferCustody, useEmployees, useProjects } from '@/app/hooks/useApi';
+import { useAsset, useCustodyHistory, useTransferCustody, useEmployees, useProjects, useReportIssue } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading, Error } from '@/app/components';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, AlertTriangle, X } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 export default function AssetDetailPage() {
@@ -41,6 +41,10 @@ export default function AssetDetailPage() {
   const [toUserName, setToUserName] = useState('');
   const [transferNotes, setTransferNotes] = useState('');
 
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportDescription, setReportDescription] = useState('');
+  const reportIssueMutation = useReportIssue();
+
   if (assetLoading || historyLoading) return <Loading />;
   if (isAuthenticated && (employeesLoading || projectsLoading)) return <Loading />;
 
@@ -59,6 +63,22 @@ export default function AssetDetailPage() {
       setTransferNotes('');
     } catch (error) {
       alert('Transfer failed');
+    }
+  };
+
+  const handleReportIssue = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reportDescription.trim()) return;
+    try {
+      await reportIssueMutation.mutateAsync({
+        assetId: asset.systemId || asset._id,
+        description: reportDescription
+      });
+      setShowReportModal(false);
+      setReportDescription('');
+      alert('تم إرسال البلاغ بنجاح للإدارة');
+    } catch(err) {
+      alert('فشل إرسال البلاغ');
     }
   };
 
@@ -185,8 +205,28 @@ export default function AssetDetailPage() {
               </Card>
             </div>
 
-            {/* QR Code & Transfer */}
+            {/* QR Code & Transfer & Report */}
             <div className="space-y-6">
+              {/* Report Issue Button (Public) */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-right text-orange-600 flex items-center justify-end gap-2">
+                    الإبلاغ عن مشكلة <AlertTriangle className="w-5 h-5" />
+                  </CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <p className="text-sm text-slate-500 text-right mb-4" dir="rtl">
+                    هل يوجد عطل أو تلف في هذا الأصل؟ يمكنك الإبلاغ عنه فوراً ليصل للإدارة.
+                  </p>
+                  <button
+                    onClick={() => setShowReportModal(true)}
+                    className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors shadow-md shadow-orange-500/30"
+                  >
+                    تقديم بلاغ صيانة
+                  </button>
+                </CardBody>
+              </Card>
+
               {isAuthenticated && (
                 <Card>
                   <CardHeader>
@@ -293,6 +333,58 @@ export default function AssetDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Report Issue Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" dir="rtl">
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-orange-50/50">
+              <h3 className="font-bold text-lg text-orange-700 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" /> الإبلاغ عن عطل
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowReportModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleReportIssue} className="p-6 text-right">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">تفاصيل المشكلة <span className="text-red-500">*</span></label>
+                  <textarea
+                    required
+                    autoFocus
+                    rows={4}
+                    value={reportDescription}
+                    onChange={(e) => setReportDescription(e.target.value)}
+                    placeholder="اشرح العطل أو المشكلة بالتفصيل (مثال: الشاشة مكسورة، الجهاز لا يعمل...)"
+                    className="w-full px-4 py-3 bg-white border border-slate-300 text-slate-900 rounded-xl focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none"
+                  />
+                </div>
+              </div>
+              <div className="mt-8 flex gap-3">
+                <button
+                  type="submit"
+                  disabled={reportIssueMutation.isPending}
+                  className="flex-1 py-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white font-bold rounded-xl transition-colors shadow-md shadow-orange-500/20"
+                >
+                  {reportIssueMutation.isPending ? 'جاري الإرسال...' : 'إرسال البلاغ'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowReportModal(false)}
+                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
