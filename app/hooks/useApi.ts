@@ -9,11 +9,13 @@ export const useAssets = (
   search?: string,
   condition?: string,
   assignment?: string,
+  custodianId?: string,
+  ids?: string[],
   page = 1,
   limit = 20
 ) => {
   return useQuery({
-    queryKey: ['assets', projectId, categoryId, search, condition, assignment, page, limit],
+    queryKey: ['assets', projectId, categoryId, search, condition, assignment, custodianId, ids?.join(','), page, limit],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (projectId) params.append('projectId', projectId);
@@ -21,6 +23,8 @@ export const useAssets = (
       if (search) params.append('search', search);
       if (condition) params.append('condition', condition);
       if (assignment) params.append('assignment', assignment);
+      if (custodianId) params.append('custodianId', custodianId);
+      if (ids && ids.length > 0) params.append('ids', ids.join(','));
       params.append('page', String(page));
       params.append('limit', String(limit));
       const response = await api.get(`/assets?${params}`);
@@ -273,6 +277,16 @@ export const useDashboardStats = () => {
   });
 };
 
+export const useMaintenanceStats = () => {
+  return useQuery({
+    queryKey: ['maintenance-stats'],
+    queryFn: async () => {
+      const response = await api.get('/reports/maintenance-stats');
+      return response.data;
+    },
+  });
+};
+
 export const useUsers = () => {
   return useQuery({
     queryKey: ['users'],
@@ -319,6 +333,17 @@ export const useDeleteUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
+  });
+};
+
+export const useEmployee = (id: string) => {
+  return useQuery({
+    queryKey: ['employee', id],
+    queryFn: async () => {
+      const response = await api.get(`/employees/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
   });
 };
 

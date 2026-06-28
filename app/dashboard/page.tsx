@@ -1,7 +1,7 @@
 'use client';
 
 import { useProtectedRoute } from '@/app/hooks/useProtected';
-import { useProjects, useAssets, useDueMaintenance, useDashboardStats } from '@/app/hooks/useApi';
+import { useProjects, useAssets, useDueMaintenance, useDashboardStats, useMaintenanceStats } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Loading, Error } from '@/app/components';
 import Link from 'next/link';
 import { Package, FolderOpen, AlertCircle, CheckCircle } from 'lucide-react';
@@ -10,11 +10,13 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recha
 export default function DashboardPage() {
   const { user, isLoading: authLoading } = useProtectedRoute();
   const { data: projectsData, isLoading: projectsLoading } = useProjects(1, 5);
-  const { data: assetsData, isLoading: assetsLoading } = useAssets(undefined, undefined, undefined, undefined, undefined, 1, 5);
+  const { data: assetsData, isLoading: assetsLoading } = useAssets(undefined, undefined, undefined, undefined, undefined, undefined, undefined, 1, 5);
   const { data: maintenanceData, isLoading: maintenanceLoading } = useDueMaintenance();
   const { data: statsData, isLoading: statsLoading } = useDashboardStats();
 
-  if (authLoading || projectsLoading || assetsLoading || maintenanceLoading || statsLoading) {
+  const { data: maintenanceStatsData, isLoading: mStatsLoading } = useMaintenanceStats();
+
+  if (authLoading || projectsLoading || assetsLoading || maintenanceLoading || statsLoading || mStatsLoading) {
     return <Loading />;
   }
 
@@ -23,6 +25,7 @@ export default function DashboardPage() {
   const dueMaintenance = maintenanceData?.data || [];
   
   const stats = statsData?.data || { excellent: 0, good: 0, needs_repair: 0, scrapped: 0 };
+  const maintenanceStats = maintenanceStatsData?.data || { monthlyCost: 0, mostBroken: [] };
   
   const pieData = [
     { name: 'ممتاز', value: stats.excellent, color: '#10b981' },
@@ -165,6 +168,51 @@ export default function DashboardPage() {
             </Card>
           </div>
         )}
+
+        {/* Maintenance Analytics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-lg shadow-red-500/30">
+            <CardBody className="p-6 flex flex-col justify-center items-center text-center h-full">
+              <AlertCircle className="w-12 h-12 mb-4 opacity-80" />
+              <h3 className="text-xl font-bold mb-2 text-red-50">تكلفة الصيانة هذا الشهر</h3>
+              <p className="text-4xl font-black">{maintenanceStats.monthlyCost || 0} ج.م</p>
+            </CardBody>
+          </Card>
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-red-600 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                أكثر الأصول تعطلاً وتكلفةً
+              </CardTitle>
+            </CardHeader>
+            <CardBody>
+              {maintenanceStats.mostBroken?.length > 0 ? (
+                <div className="space-y-3">
+                  {maintenanceStats.mostBroken.slice(0, 5).map((broken: any, index: number) => (
+                    <div key={broken._id} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm shadow-sm">
+                          {index + 1}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900">{broken.assetName}</p>
+                          <p className="text-xs font-mono text-slate-500">{broken.systemId}</p>
+                        </div>
+                      </div>
+                      <div className="text-left" dir="ltr">
+                        <p className="font-black text-red-600">{broken.totalCost} ج.م</p>
+                        <p className="text-xs text-slate-500 font-bold text-right" dir="rtl">{broken.taskCount} بلاغات صيانة</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-500 text-center py-8 font-bold text-lg">لا توجد أصول متعطلة بتكلفة صيانة! سجل نظيف 👏</p>
+              )}
+            </CardBody>
+          </Card>
+        </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

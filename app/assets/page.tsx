@@ -4,19 +4,21 @@ import { useProtectedRoute } from '@/app/hooks/useProtected';
 import { useAssets, useDeleteAsset, useCategories, useProjects } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading, Error } from '@/app/components';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, Suspense } from 'react';
-import { Eye, Trash2, Plus, FileSpreadsheet, Printer } from 'lucide-react';
+import { Eye, Trash2, Plus, FileSpreadsheet, Printer, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 
 function AssetsContent() {
   const { user, isLoading: authLoading } = useProtectedRoute();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'));
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedCondition, setSelectedCondition] = useState('');
   const [selectedAssignment, setSelectedAssignment] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const { data: projectsData } = useProjects(1, 100);
   const { data: assetsData, isLoading, error } = useAssets(
@@ -25,6 +27,8 @@ function AssetsContent() {
     search || undefined, 
     selectedCondition || undefined,
     selectedAssignment || undefined,
+    undefined, // custodianId
+    undefined, // ids
     page, 
     20
   );
@@ -54,6 +58,19 @@ function AssetsContent() {
             </p>
           </div>
             <div className="flex flex-wrap gap-3 print:hidden">
+            {selectedIds.length > 0 && (
+              <Button 
+                variant="secondary" 
+                className="flex items-center gap-2 border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 font-bold shadow-sm"
+                onClick={() => {
+                  sessionStorage.setItem('printAssetIds', JSON.stringify(selectedIds));
+                  router.push('/assets/print');
+                }}
+              >
+                <Printer className="w-4 h-4" />
+                طباعة {selectedIds.length} ملصق
+              </Button>
+            )}
               <Button 
                 variant="secondary" 
                 onClick={() => window.print()} 
@@ -65,7 +82,7 @@ function AssetsContent() {
               <Link href="/assets/import">
                 <Button variant="secondary" className="flex items-center gap-2 border border-blue-200 bg-white text-blue-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm transition-all">
                   <FileSpreadsheet className="w-4 h-4" />
-                  استيراد من ملف Word
+                  استيراد من ملف Excel
                 </Button>
               </Link>
               <Link href="/assets/new">
@@ -137,11 +154,21 @@ function AssetsContent() {
           </CardHeader>
           <CardBody>
             {assets.length > 0 ? (
-              <>
+              <div className="overflow-x-auto">
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell header className="w-12 text-center">م</TableCell>
+                      <TableCell header className="w-12 text-center">
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          checked={assets.length > 0 && selectedIds.length === assets.length}
+                          onChange={(e) => {
+                            if (e.target.checked) setSelectedIds(assets.map((a: any) => a._id));
+                            else setSelectedIds([]);
+                          }}
+                        />
+                      </TableCell>
                       <TableCell header>معرف النظام</TableCell>
                       <TableCell header>الاسم</TableCell>
                       <TableCell header>الرصيد</TableCell>
@@ -151,10 +178,18 @@ function AssetsContent() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {assets.map((asset: any, index: number) => (
+                    {assets.map((asset: any) => (
                       <TableRow key={asset._id} className="print:border-b print:border-slate-300">
-                        <TableCell className="font-medium text-slate-500 text-center bg-slate-50/50">
-                          {(page - 1) * 20 + index + 1}
+                        <TableCell className="text-center">
+                          <input 
+                            type="checkbox" 
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            checked={selectedIds.includes(asset._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) setSelectedIds(prev => [...prev, asset._id]);
+                              else setSelectedIds(prev => prev.filter(id => id !== asset._id));
+                            }}
+                          />
                         </TableCell>
                         <TableCell className="font-mono font-bold text-slate-900">{asset.systemId}</TableCell>
                         <TableCell className="font-semibold text-slate-800">{asset.name}</TableCell>

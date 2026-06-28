@@ -15,7 +15,7 @@ export default function ReportsPage() {
 
   const { data: projectsData } = useProjects(1, 100);
   // Fetch up to 5000 assets to compute analytics safely on frontend
-  const { data: assetsData, isLoading: assetsLoading } = useAssets(selectedProjectId || undefined, undefined, undefined, undefined, undefined, 1, 5000);
+  const { data: assetsData, isLoading: assetsLoading } = useAssets(selectedProjectId || undefined, undefined, undefined, undefined, undefined, undefined, undefined, 1, 5000);
 
   if (authLoading || assetsLoading) return <div className="p-8 text-center text-slate-500 font-medium">جاري التحميل...</div>;
 

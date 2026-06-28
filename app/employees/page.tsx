@@ -5,18 +5,20 @@ import { useEmployees, useCreateEmployee, useProjects } from '@/app/hooks/useApi
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading } from '@/app/components';
 import { useState, useEffect } from 'react';
 import { Plus, Users, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function EmployeesPage() {
   const { user, isLoading: authLoading } = useProtectedRoute();
   const [showAddForm, setShowAddForm] = useState(false);
   const [projectId, setProjectId] = useState('');
+  const [filterProjectId, setFilterProjectId] = useState('');
   const [employeesList, setEmployeesList] = useState([{ name: '', department: '' }]);
 
   const { data: projectsData } = useProjects(1, 100);
   const projects = projectsData?.data || [];
 
   const { data: employeesData, isLoading: employeesLoading } = useEmployees(
-    user?.role !== 'admin' ? user?.siteId : undefined
+    filterProjectId || (user?.role !== 'admin' ? user?.siteId : undefined)
   );
   const employees = employeesData?.data || [];
 
@@ -73,6 +75,22 @@ export default function EmployeesPage() {
             <Plus className="w-4 h-4" />
             إضافة موظفين
           </Button>
+        </div>
+
+        {/* Project Filter */}
+        <div className="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex gap-4 items-center" dir="rtl">
+          <label className="font-bold text-slate-700 whitespace-nowrap">تصفية بالمشروع:</label>
+          <select
+            value={filterProjectId}
+            onChange={(e) => setFilterProjectId(e.target.value)}
+            className="w-full md:w-1/4 px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold bg-slate-50"
+            disabled={projects.length === 1 && !!user?.siteId}
+          >
+            <option value="">جميع المشاريع</option>
+            {projects.map((p: any) => (
+              <option key={p._id} value={p._id}>{p.name}</option>
+            ))}
+          </select>
         </div>
 
         {showAddForm && (
@@ -165,6 +183,7 @@ export default function EmployeesPage() {
                     <TableCell header>اسم الموظف</TableCell>
                     <TableCell header>المشروع</TableCell>
                     <TableCell header>القسم</TableCell>
+                    <TableCell header>إجراءات</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -173,6 +192,13 @@ export default function EmployeesPage() {
                       <TableCell className="font-bold text-slate-900">{emp.name}</TableCell>
                       <TableCell className="text-slate-800">{emp.projectId?.name || 'غير معروف'}</TableCell>
                       <TableCell className="text-slate-600">{emp.department || 'غير متوفر'}</TableCell>
+                      <TableCell>
+                        <Link href={`/employees/${emp._id}`}>
+                          <Button variant="primary" className="text-sm py-1.5 px-3 font-bold shadow-sm shadow-blue-500/30">
+                            كشف العهدة
+                          </Button>
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
