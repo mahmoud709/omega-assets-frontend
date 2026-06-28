@@ -36,7 +36,7 @@ export default function ReportsPage() {
   
   assets.forEach((a: any) => {
     if (a.condition) conditionCount[a.condition]++;
-    if (a.currentCustodianId) assignedCount++;
+    if (a.currentCustodianId || (a.custodianName && a.custodianName !== 'المخزن')) assignedCount++;
     
     // category object from backend usually populated, fallback to string if not
     const catName = typeof a.categoryId === 'object' ? a.categoryId?.path || a.categoryId?.name : 'غير مصنف';
@@ -84,7 +84,7 @@ export default function ReportsPage() {
         </Card>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-all group">
             <CardBody className="p-6 flex items-center justify-between">
               <div>
@@ -100,7 +100,7 @@ export default function ReportsPage() {
           <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-all group">
             <CardBody className="p-6 flex items-center justify-between">
               <div>
-                <p className="text-slate-500 font-semibold mb-2">أصول في عهدة موظفين</p>
+                <p className="text-slate-500 font-semibold mb-2">في عهدة موظفين</p>
                 <p className="text-4xl font-black text-slate-800 group-hover:text-emerald-500 transition-colors">{assignedCount}</p>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
@@ -112,11 +112,23 @@ export default function ReportsPage() {
           <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-all group">
             <CardBody className="p-6 flex items-center justify-between">
               <div>
-                <p className="text-slate-500 font-semibold mb-2">أصول غير موزعة (في المخزن)</p>
+                <p className="text-slate-500 font-semibold mb-2">غير موزعة (مخزن)</p>
                 <p className="text-4xl font-black text-slate-800 group-hover:text-amber-500 transition-colors">{totalAssets - assignedCount}</p>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center">
                 <div className="w-6 h-6 rounded-full bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)]"></div>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-all group cursor-pointer" onClick={() => window.location.href = '/maintenance'}>
+            <CardBody className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-slate-500 font-semibold mb-2">أعطال (تحتاج إصلاح)</p>
+                <p className="text-4xl font-black text-slate-800 group-hover:text-red-500 transition-colors">{conditionCount.needs_repair || 0}</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center">
+                <div className="w-6 h-6 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"></div>
               </div>
             </CardBody>
           </Card>

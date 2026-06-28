@@ -212,8 +212,8 @@ export default function AssetDetailPage() {
                   {/* Report Issue Button */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-right text-orange-600 flex items-center justify-end gap-2">
-                        الإبلاغ عن مشكلة <AlertTriangle className="w-5 h-5" />
+                      <CardTitle className="text-orange-600 flex items-center gap-2" dir="rtl">
+                        <AlertTriangle className="w-5 h-5" /> الإبلاغ عن مشكلة
                       </CardTitle>
                     </CardHeader>
                     <CardBody>
@@ -243,6 +243,7 @@ export default function AssetDetailPage() {
                       )}
                     </CardBody>
                   </Card>
+                </>
               )}
 
               {isAuthenticated && (
