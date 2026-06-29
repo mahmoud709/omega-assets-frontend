@@ -250,7 +250,7 @@ export default function EmployeesPage() {
                               _id: emp._id,
                               name: emp.name,
                               department: emp.department || '',
-                              projectId: emp.projectId?._id || '',
+                              projectId: (emp.projectId && emp.projectId._id) ? emp.projectId._id : (emp.projectId || ''),
                             })}
                             title="تعديل البيانات"
                           >

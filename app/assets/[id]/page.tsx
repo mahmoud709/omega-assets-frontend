@@ -105,7 +105,7 @@ export default function AssetDetailPage() {
               {asset.condition === 'needs_repair' && (
                 <div className="mb-6 bg-red-100 border-2 border-red-500 text-red-800 px-6 py-4 rounded-xl shadow-sm" dir="rtl">
                   <div className="flex items-center gap-4 mb-3">
-                    <AlertTriangle className="w-10 h-10 text-red-600 flex-shrink-0" />
+                    <AlertTriangle className="w-10 h-10 text-red-600 shrink-0" />
                     <div>
                       <h3 className="font-bold text-xl">تحذير: هذا الأصل مُعطل حالياً!</h3>
                       <p className="font-medium mt-1 text-red-700">هذه العهدة تحت الصيانة، يرجى عدم استخدامها.</p>
