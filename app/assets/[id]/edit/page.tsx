@@ -1,7 +1,7 @@
 'use client';
 
 import { useProtectedRoute } from '@/app/hooks/useProtected';
-
+import { useEmployees } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Loading } from '@/app/components';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -25,6 +25,7 @@ export default function EditAsset() {
     purchaseCost: '',
     vendor: '',
     notes: '',
+    custodianName: '',
   });
 
   const { data: assetData, isLoading: assetLoading } = useQuery({
@@ -47,9 +48,13 @@ export default function EditAsset() {
         purchaseCost: a.purchaseCost || '',
         vendor: a.vendor || '',
         notes: a.notes || a.specifications?.['ملاحظات'] || '',
+        custodianName: a.custodianName || '',
       });
     }
   }, [assetData]);
+
+  const { data: employeesData } = useEmployees(assetData?.asset?.projectId?._id);
+  const employees = employeesData?.data || [];
 
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -152,6 +157,21 @@ export default function EditAsset() {
                     onChange={(e) => setFormData({ ...formData, vendor: e.target.value })}
                     className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 rounded-xl focus:ring-2 focus:ring-blue-500"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">العهدة الحالية (المسؤول أو المكتب)</label>
+                  <select
+                    value={formData.custodianName}
+                    onChange={(e) => setFormData({ ...formData, custodianName: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 rounded-xl focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">في المخزن (بدون عهدة)</option>
+                    {employees.map((emp: any) => (
+                      <option key={emp._id} value={emp.name}>
+                        {emp.name} {emp.isOffice ? '(مكتب/جهة)' : ''}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-slate-700 mb-2">الملاحظات</label>
