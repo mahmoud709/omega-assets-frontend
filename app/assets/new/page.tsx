@@ -22,7 +22,7 @@ export default function NewAssetPage() {
 
   // Dynamic array of assets to be created
   const [assetsList, setAssetsList] = useState([
-    { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '' }
+    { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '', notes: '' }
   ]);
 
   const bulkCreateAssets = useBulkCreateAssets();
@@ -51,7 +51,7 @@ export default function NewAssetPage() {
   const addAssetRow = () => {
     setAssetsList([
       ...assetsList,
-      { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '' }
+      { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '', notes: '' }
     ]);
   };
 
@@ -331,6 +331,20 @@ export default function NewAssetPage() {
                           onChange={(e) => handleAssetChange(index, 'purchaseCost', e.target.value)}
                           placeholder="مثال: 5000"
                           className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold placeholder:text-slate-400 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+                        />
+                      </div>
+
+                      {/* Notes */}
+                      <div className="space-y-2 lg:col-span-3">
+                        <label className="block text-sm font-semibold text-slate-700">
+                          الملاحظات (اختياري)
+                        </label>
+                        <textarea
+                          value={asset.notes || ''}
+                          onChange={(e) => handleAssetChange(index, 'notes', e.target.value)}
+                          placeholder="أي ملاحظات إضافية حول هذا الأصل..."
+                          rows={2}
+                          className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold placeholder:text-slate-400 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm resize-none"
                         />
                       </div>
                     </div>
