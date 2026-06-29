@@ -14,7 +14,7 @@ export default function EmployeesPage() {
   const [filterProjectId, setFilterProjectId] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [employeesList, setEmployeesList] = useState([{ name: '', department: '' }]);
+  const [employeesList, setEmployeesList] = useState<any[]>([{ name: '', department: '', isOffice: false, members: [], memberSearch: '' }]);
 
   const { data: projectsData } = useProjects(1, 100);
   const projects = projectsData?.data || [];
@@ -27,6 +27,9 @@ export default function EmployeesPage() {
   );
   const employees = employeesData?.data || [];
   const pagination = employeesData?.pagination || { total: 0, page: 1, pages: 1 };
+  
+  // Extract unique departments for the smart dropdown
+  const existingDepartments = Array.from(new Set(employees.map((emp: any) => emp.department).filter(Boolean)));
 
   const createEmployee = useCreateEmployee();
   const updateEmployee = useUpdateEmployee();
@@ -43,6 +46,8 @@ export default function EmployeesPage() {
           name: editingEmployee.name,
           department: editingEmployee.department,
           projectId: editingEmployee.projectId,
+          isOffice: editingEmployee.isOffice,
+          members: editingEmployee.members,
         }
       });
       setEditingEmployee(null);
@@ -65,7 +70,7 @@ export default function EmployeesPage() {
   };
 
   const addEmployeeRow = () => {
-    setEmployeesList([...employeesList, { name: '', department: '' }]);
+    setEmployeesList([...employeesList, { name: '', department: '', isOffice: false, members: [], memberSearch: '' }]);
   };
 
   const removeEmployeeRow = (index: number) => {
@@ -97,7 +102,7 @@ export default function EmployeesPage() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
             <Users className="w-8 h-8 text-blue-600" />
-            موظفي المشاريع
+            مستلمي العهد / الموظفين
           </h1>
           <Button variant="success" className="flex items-center gap-2 font-bold" onClick={() => setShowAddForm(!showAddForm)}>
             <Plus className="w-4 h-4" />
@@ -158,37 +163,99 @@ export default function EmployeesPage() {
                 <div className="space-y-4">
                   {employeesList.map((emp, index) => (
                     <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 bg-slate-50 rounded-xl border border-slate-200">
-                      <div className="md:col-span-5">
-                        <label className="block text-sm font-bold text-slate-700 mb-1">اسم الموظف *</label>
+                      <div className={emp.isOffice ? "md:col-span-12" : "md:col-span-5"}>
+                        <label className="block text-sm font-bold text-slate-700 mb-1">
+                          {emp.isOffice ? 'اسم المكتب / الكيان *' : 'اسم الموظف / الجهة (مثل: المكتب الفني) *'}
+                        </label>
                         <input
                           type="text"
                           value={emp.name}
                           onChange={(e) => handleEmployeeChange(index, 'name', e.target.value)}
                           className="w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold"
-                          placeholder="مثال: أحمد محمود"
+                          placeholder={emp.isOffice ? "مثال: المكتب الفني، مخزن المشروع..." : "مثال: أحمد محمود"}
                           required
                         />
                       </div>
-                      <div className="md:col-span-5">
-                        <label className="block text-sm font-bold text-slate-700 mb-1">القسم</label>
-                        <input
-                          type="text"
-                          value={emp.department}
-                          onChange={(e) => handleEmployeeChange(index, 'department', e.target.value)}
-                          className="w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold"
-                          placeholder="مثال: الهندسة، تقنية المعلومات..."
+                      {!emp.isOffice && (
+                        <div className="md:col-span-5">
+                          <label className="block text-sm font-bold text-slate-700 mb-1">القسم (اختياري)</label>
+                          <input
+                            type="text"
+                            list="departments-list"
+                            value={emp.department}
+                            onChange={(e) => handleEmployeeChange(index, 'department', e.target.value)}
+                            className="w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold"
+                            placeholder="اختر أو اكتب قسم جديد..."
+                          />
+                          <datalist id="departments-list">
+                            {existingDepartments.map((dept: any, i) => (
+                              <option key={i} value={dept} />
+                            ))}
+                          </datalist>
+                        </div>
+                      )}
+                      
+                      {/* Is Office Checkbox */}
+                      <div className="md:col-span-12 flex items-center gap-2 mt-2">
+                        <input 
+                          type="checkbox" 
+                          checked={emp.isOffice} 
+                          onChange={(e) => handleEmployeeChange(index, 'isOffice', e.target.checked)} 
+                          id={`isOffice-${index}`}
+                          className="w-4 h-4 text-blue-600 rounded border-slate-300"
                         />
+                        <label htmlFor={`isOffice-${index}`} className="text-sm font-bold text-slate-700">
+                          هذا كيان / مكتب (يحتوي على عدة أشخاص يوقعون على العهدة)
+                        </label>
                       </div>
-                      <div className="md:col-span-2">
+
+                      {/* Members Selection (if isOffice) */}
+                      {emp.isOffice && (
+                        <div className="md:col-span-12 bg-white p-4 rounded-lg border border-slate-200 mt-2 shadow-sm">
+                          <div className="flex justify-between items-center mb-3">
+                            <label className="block text-sm font-bold text-slate-700">اختر الأشخاص الذين سيوقعون على العهدة:</label>
+                            <input
+                              type="text"
+                              value={emp.memberSearch || ''}
+                              onChange={(e) => handleEmployeeChange(index, 'memberSearch', e.target.value)}
+                              placeholder="بحث بالاسم أو القسم..."
+                              className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div className="flex flex-wrap gap-3 max-h-48 overflow-y-auto p-1">
+                            {employees
+                              .filter((e: any) => !e.isOffice)
+                              .filter((e: any) => !emp.memberSearch || e.name.includes(emp.memberSearch) || (e.department && e.department.includes(emp.memberSearch)))
+                              .map((e: any) => (
+                              <label key={e._id} className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200 cursor-pointer hover:bg-slate-100">
+                                <input 
+                                  type="checkbox"
+                                  checked={emp.members.includes(e._id)}
+                                  onChange={(evt) => {
+                                    const checked = evt.target.checked;
+                                    let newMembers = [...emp.members];
+                                    if (checked) newMembers.push(e._id);
+                                    else newMembers = newMembers.filter((m: string) => m !== e._id);
+                                    handleEmployeeChange(index, 'members', newMembers);
+                                  }}
+                                />
+                                <span className="text-sm font-bold text-slate-800">{e.name}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="md:col-span-12 flex justify-end">
                         {employeesList.length > 1 && (
                           <Button 
                             variant="danger" 
                             type="button" 
                             onClick={() => removeEmployeeRow(index)}
-                            className="w-full h-11 flex items-center justify-center gap-2"
+                            className="h-11 flex items-center justify-center gap-2 px-6"
                           >
                             <Trash2 className="w-4 h-4" />
-                            حذف
+                            حذف هذا الصف
                           </Button>
                         )}
                       </div>
@@ -224,7 +291,7 @@ export default function EmployeesPage() {
                 <Table>
                 <TableHead>
                   <TableRow className="text-right" dir="rtl">
-                    <TableCell header>اسم الموظف</TableCell>
+                    <TableCell header>المستلم / الجهة</TableCell>
                     <TableCell header>المشروع</TableCell>
                     <TableCell header>القسم</TableCell>
                     <TableCell header>إجراءات</TableCell>
@@ -251,6 +318,9 @@ export default function EmployeesPage() {
                               name: emp.name,
                               department: emp.department || '',
                               projectId: (emp.projectId && emp.projectId._id) ? emp.projectId._id : (emp.projectId || ''),
+                              isOffice: emp.isOffice || false,
+                              members: emp.members ? emp.members.map((m: any) => m._id || m) : [],
+                              memberSearch: '',
                             })}
                             title="تعديل البيانات"
                           >
@@ -316,15 +386,24 @@ export default function EmployeesPage() {
                     className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1">القسم / الوظيفة</label>
-                  <input
-                    type="text"
-                    value={editingEmployee.department}
-                    onChange={(e) => setEditingEmployee({...editingEmployee, department: e.target.value})}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold"
-                  />
-                </div>
+                {!editingEmployee.isOffice && (
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1">القسم / الوظيفة (اختياري)</label>
+                    <input
+                      type="text"
+                      list="edit-departments-list"
+                      value={editingEmployee.department}
+                      onChange={(e) => setEditingEmployee({...editingEmployee, department: e.target.value})}
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold"
+                      placeholder="اختر أو اكتب قسم جديد..."
+                    />
+                    <datalist id="edit-departments-list">
+                      {existingDepartments.map((dept: any, i) => (
+                        <option key={i} value={dept} />
+                      ))}
+                    </datalist>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">المشروع التابع له *</label>
                   <select
@@ -340,6 +419,56 @@ export default function EmployeesPage() {
                     ))}
                   </select>
                 </div>
+
+                <div className="flex items-center gap-2 mt-4">
+                  <input 
+                    type="checkbox" 
+                    checked={editingEmployee.isOffice} 
+                    onChange={(e) => setEditingEmployee({...editingEmployee, isOffice: e.target.checked})} 
+                    id="edit-isOffice"
+                    className="w-4 h-4 text-blue-600 rounded border-slate-300"
+                  />
+                  <label htmlFor="edit-isOffice" className="text-sm font-bold text-slate-700">
+                    هذا كيان / مكتب (يحتوي على عدة أشخاص)
+                  </label>
+                </div>
+
+                {editingEmployee.isOffice && (
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mt-2 shadow-sm">
+                    <div className="flex justify-between items-center mb-3">
+                      <label className="block text-sm font-bold text-slate-700">الأشخاص المخولين بالتوقيع:</label>
+                      <input
+                        type="text"
+                        value={editingEmployee.memberSearch || ''}
+                        onChange={(e) => setEditingEmployee({...editingEmployee, memberSearch: e.target.value})}
+                        placeholder="بحث بالاسم أو القسم..."
+                        className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-1">
+                      {employees
+                        .filter((e: any) => !e.isOffice)
+                        .filter((e: any) => !editingEmployee.memberSearch || e.name.includes(editingEmployee.memberSearch) || (e.department && e.department.includes(editingEmployee.memberSearch)))
+                        .map((e: any) => (
+                        <label key={e._id} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-slate-200 cursor-pointer hover:bg-slate-50">
+                          <input 
+                            type="checkbox"
+                            checked={editingEmployee.members.includes(e._id)}
+                            onChange={(evt) => {
+                              const checked = evt.target.checked;
+                              let newMembers = [...editingEmployee.members];
+                              if (checked) newMembers.push(e._id);
+                              else newMembers = newMembers.filter((m: string) => m !== e._id);
+                              setEditingEmployee({...editingEmployee, members: newMembers});
+                            }}
+                          />
+                          <span className="text-sm font-bold text-slate-800">{e.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
                   <Button type="button" variant="secondary" onClick={() => setEditingEmployee(null)}>
                     إلغاء

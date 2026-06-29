@@ -160,16 +160,29 @@ export default function EmployeeCustodyReport() {
             {/* Signatures Area */}
             {assets.length > 0 && (
               <div className="mt-16 grid grid-cols-2 gap-12 text-center pt-8 border-t border-slate-200 print:break-inside-avoid">
-                <div>
-                  <h4 className="font-bold text-slate-700 mb-8">إقرار المستلم (الموظف)</h4>
-                  <p className="text-sm text-slate-500 mb-6">أقر أنا الموقع أدناه باستلام العهد المذكورة أعلاه بحالة جيدة وأتعهد بالحفاظ عليها وإعادتها عند الطلب.</p>
-                  <div className="inline-block border-b-2 border-slate-400 border-dashed w-48 pb-2">
-                    <span className="text-slate-300 text-sm">التوقيع</span>
-                  </div>
+                <div className="flex flex-col gap-8">
+                  {employee?.isOffice && employee?.members?.length > 0 ? (
+                    employee.members.map((member: any, idx: number) => (
+                      <div key={idx} className="mb-4">
+                        <h4 className="font-bold text-slate-700 mb-4">إقرار المستلم ({member.name || member})</h4>
+                        <div className="inline-block border-b-2 border-slate-400 border-dashed w-48 pb-2">
+                          <span className="text-slate-300 text-sm">التوقيع</span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div>
+                      <h4 className="font-bold text-slate-700 mb-8">إقرار المستلم ({employee?.name})</h4>
+                      <p className="text-sm text-slate-500 mb-6">أقر أنا الموقع أدناه باستلام العهد المذكورة أعلاه بحالة جيدة وأتعهد بالحفاظ عليها وإعادتها عند الطلب.</p>
+                      <div className="inline-block border-b-2 border-slate-400 border-dashed w-48 pb-2">
+                        <span className="text-slate-300 text-sm">التوقيع</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h4 className="font-bold text-slate-700 mb-8">اعتماد الإدارة (أمين المخزن / المدير)</h4>
-                  <p className="text-sm text-slate-500 mb-6">أقر بتسليم العهد المذكورة أعلاه للموظف بعد فحصها والتأكد من سلامتها.</p>
+                  <p className="text-sm text-slate-500 mb-6">أقر بتسليم العهد المذكورة أعلاه للموظف/المكتب بعد فحصها والتأكد من سلامتها.</p>
                   <div className="inline-block border-b-2 border-slate-400 border-dashed w-48 pb-2 mt-4">
                     <span className="text-slate-300 text-sm">التوقيع / الختم</span>
                   </div>
