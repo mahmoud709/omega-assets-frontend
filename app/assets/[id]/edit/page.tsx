@@ -126,6 +126,7 @@ export default function EditAsset() {
                   >
                     <option value="excellent">ممتاز</option>
                     <option value="good">جيد</option>
+                    <option value="bad">سيء</option>
                     <option value="needs_repair">يحتاج صيانة</option>
                     <option value="scrapped">تالف / خردة</option>
                   </select>

@@ -180,6 +180,7 @@ function AssetsContent() {
                 <option value="">جميع الحالات</option>
                 <option value="excellent">ممتاز</option>
                 <option value="good">جيد</option>
+                <option value="bad">سيء</option>
                 <option value="needs_repair">يحتاج صيانة</option>
                 <option value="scrapped">تالف / خردة</option>
               </select>
@@ -248,12 +249,14 @@ function AssetsContent() {
                                 ? 'bg-green-100 text-green-800'
                                 : asset.condition === 'excellent'
                                 ? 'bg-blue-100 text-blue-800'
+                                : asset.condition === 'bad'
+                                ? 'bg-yellow-100 text-yellow-800'
                                 : asset.condition === 'needs_repair'
                                 ? 'bg-orange-100 text-orange-800'
                                 : 'bg-red-100 text-red-800'
                             }`}
                           >
-                            {asset.condition === 'good' ? 'جيد' : asset.condition === 'excellent' ? 'ممتاز' : asset.condition === 'needs_repair' ? 'يحتاج صيانة' : 'تالف / خردة'}
+                            {asset.condition === 'good' ? 'جيد' : asset.condition === 'excellent' ? 'ممتاز' : asset.condition === 'bad' ? 'سيء' : asset.condition === 'needs_repair' ? 'يحتاج صيانة' : 'تالف / خردة'}
                           </span>
                         </TableCell>
                         <TableCell className="font-medium text-slate-600">

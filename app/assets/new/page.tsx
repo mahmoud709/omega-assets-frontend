@@ -269,6 +269,7 @@ export default function NewAssetPage() {
                         >
                           <option value="excellent" className="text-slate-900">ممتاز</option>
                           <option value="good" className="text-slate-900">جيد</option>
+                          <option value="bad" className="text-slate-900">سيء</option>
                           <option value="needs_repair" className="text-slate-900">يحتاج إصلاح</option>
                           <option value="scrapped" className="text-slate-900">تالف</option>
                         </select>

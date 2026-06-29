@@ -139,6 +139,10 @@ export default function AssetDetailPage() {
                       <p className="text-lg font-bold text-blue-700">{asset.projectId?.name || 'غير محدد'}</p>
                     </div>
                     <div>
+                      <p className="text-sm text-slate-500 font-medium mb-1">الفئة / التصنيف</p>
+                      <p className="text-lg font-bold text-slate-900">{asset.categoryId?.name || 'غير محدد'}</p>
+                    </div>
+                    <div>
                       <p className="text-sm text-slate-500 font-medium mb-1">معرف النظام (System ID)</p>
                       <p className="text-lg font-bold font-mono text-slate-900">{asset.systemId}</p>
                     </div>
@@ -147,6 +151,7 @@ export default function AssetDetailPage() {
                       <p className="text-lg font-bold text-slate-900 capitalize">
                         {asset.condition === 'excellent' ? 'ممتاز' :
                          asset.condition === 'good' ? 'جيد' :
+                         asset.condition === 'bad' ? 'سيء' :
                          asset.condition === 'needs_repair' ? 'يحتاج صيانة' :
                          asset.condition === 'scrapped' ? 'تالف / خردة' : asset.condition}
                       </p>
@@ -177,14 +182,14 @@ export default function AssetDetailPage() {
                     )}
                     <div>
                       <p className="text-sm text-slate-500 font-medium mb-1">العهدة الحالية (المسؤول)</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {asset.currentCustodianId?.fullName || asset.custodianName || 'في المخزن'}
+                      <div className="text-lg font-bold text-slate-900 flex items-center gap-2 flex-wrap">
+                        <span>{asset.currentCustodianId?.fullName || asset.custodianName || 'في المخزن'}</span>
                         {asset.custodianName && employees.find((emp: any) => emp.name === asset.custodianName)?.department && (
-                          <span className="text-sm text-slate-500 mr-2 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
+                          <span className="text-sm text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
                             {employees.find((emp: any) => emp.name === asset.custodianName).department}
                           </span>
                         )}
-                      </p>
+                      </div>
                     </div>
                   </div>
 
