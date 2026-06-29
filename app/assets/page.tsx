@@ -260,7 +260,7 @@ function AssetsContent() {
                           </span>
                         </TableCell>
                         <TableCell className="font-medium text-slate-600">
-                          {asset.specifications?.['ملاحظات'] || '-'}
+                          {asset.notes || '-'}
                         </TableCell>
                         <TableCell className="print:hidden">
                           <div className="flex gap-2">

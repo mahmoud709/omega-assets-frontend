@@ -22,7 +22,7 @@ export default function NewAssetPage() {
 
   // Dynamic array of assets to be created
   const [assetsList, setAssetsList] = useState([
-    { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '', notes: '' }
+    { categoryId: '', name: '', quantity: 1, serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '', notes: '' }
   ]);
 
   const bulkCreateAssets = useBulkCreateAssets();
@@ -51,7 +51,7 @@ export default function NewAssetPage() {
   const addAssetRow = () => {
     setAssetsList([
       ...assetsList,
-      { categoryId: '', name: '', serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '', notes: '' }
+      { categoryId: '', name: '', quantity: 1, serialNumber: generateSN(), condition: 'good', custodianName: '', purchaseDate: '', purchaseCost: '', vendor: '', notes: '' }
     ]);
   };
 
@@ -255,6 +255,20 @@ export default function NewAssetPage() {
                             <RefreshCw className="w-4 h-4" />
                           </button>
                         </div>
+                      </div>
+
+                      {/* Quantity */}
+                      <div className="space-y-2 lg:col-span-1">
+                        <label className="block text-sm font-semibold text-slate-700">
+                          العدد (الكمية)
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={asset.quantity || 1}
+                          onChange={(e) => handleAssetChange(index, 'quantity', e.target.value)}
+                          className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+                        />
                       </div>
 
                       {/* Condition */}
