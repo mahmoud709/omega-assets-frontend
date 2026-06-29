@@ -193,6 +193,13 @@ export default function AssetDetailPage() {
                     </div>
                   </div>
 
+                  {asset.notes && (
+                    <div className="border-t border-slate-200 pt-4 mt-6">
+                      <p className="font-bold text-slate-900 mb-2">الملاحظات</p>
+                      <p className="text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">{asset.notes}</p>
+                    </div>
+                  )}
+
                   {asset.specifications && Object.keys(asset.specifications).length > 0 && (
                     <div className="border-t border-slate-200 pt-4 mt-6">
                       <p className="font-bold text-slate-900 mb-2">المواصفات</p>
