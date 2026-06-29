@@ -260,7 +260,7 @@ export default function NewAssetPage() {
                       {/* Quantity */}
                       <div className="space-y-2 lg:col-span-1">
                         <label className="block text-sm font-semibold text-slate-700">
-                          العدد (الكمية)
+                          الرصيد
                         </label>
                         <input
                           type="number"

@@ -244,7 +244,7 @@ function AssetsContent() {
                         </TableCell>
                         <TableCell>
                           <span
-                            className={`px-3 py-1 rounded text-sm font-bold ${
+                            className={`px-3 py-1 rounded text-sm font-bold whitespace-nowrap inline-block ${
                               asset.condition === 'good'
                                 ? 'bg-green-100 text-green-800'
                                 : asset.condition === 'excellent'
