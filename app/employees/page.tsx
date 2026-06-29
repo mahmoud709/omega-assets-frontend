@@ -63,7 +63,7 @@ export default function EmployeesPage() {
     }
   }, [projects, user]);
 
-  const handleEmployeeChange = (index: number, field: string, value: string) => {
+  const handleEmployeeChange = (index: number, field: string, value: any) => {
     const updated = [...employeesList];
     updated[index] = { ...updated[index], [field]: value };
     setEmployeesList(updated);
