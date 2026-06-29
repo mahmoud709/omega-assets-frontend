@@ -6,7 +6,8 @@ import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableB
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, Suspense } from 'react';
-import { Eye, Trash2, Plus, FileSpreadsheet, Printer, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import { Eye, Trash2, Plus, FileSpreadsheet, Printer, ArrowDownToLine, ArrowUpFromLine, Edit } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 function AssetsContent() {
   const { user, isLoading: authLoading } = useProtectedRoute();
@@ -42,6 +43,38 @@ function AssetsContent() {
   const pagination = assetsData?.pagination || {};
   const categories = categoriesData?.data || [];
   const projects = projectsData?.data || [];
+
+  const exportToExcel = () => {
+    if (!assets || assets.length === 0) return;
+    const data = assets.map((a: any) => ({
+      'معرف النظام (System ID)': a.systemId,
+      'اسم الأصل': a.name,
+      'المشروع': a.projectId?.name || 'غير محدد',
+      'الفئة': a.categoryId?.name || 'غير محدد',
+      'الرقم التسلسلي': a.serialNumber || '-',
+      'الحالة': a.condition === 'excellent' ? 'ممتاز' : a.condition === 'good' ? 'جيد' : a.condition === 'needs_repair' ? 'يحتاج صيانة' : 'تالف / خردة',
+      'تاريخ الشراء': a.purchaseDate ? new Date(a.purchaseDate).toLocaleDateString('ar-EG') : '-',
+      'تكلفة الشراء': a.purchaseCost || '-',
+      'المورد': a.vendor || '-',
+      'العهدة الحالية (المسؤول)': a.currentCustodianId?.fullName || a.custodianName || 'في المخزن',
+      'الرصيد': a.quantity || 1,
+      'الملاحظات': a.notes || a.specifications?.['ملاحظات'] || '-',
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    
+    // Auto-size columns (rough estimate)
+    const colWidths = Object.keys(data[0]).map(key => ({ wch: Math.max(key.length, 15) }));
+    ws['!cols'] = colWidths;
+    
+    // Set RTL direction for the worksheet
+    if(!ws['!views']) ws['!views'] = [];
+    ws['!views'].push({ rightToLeft: true });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Assets");
+    XLSX.writeFile(wb, "تقرير_الأصول.xlsx");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -79,6 +112,16 @@ function AssetsContent() {
                 <Printer className="w-4 h-4" />
                 طباعة السجل
               </Button>
+              {user?.role === 'admin' && (
+                <Button 
+                  variant="secondary" 
+                  onClick={exportToExcel}
+                  className="flex items-center gap-2 border border-green-300 bg-white text-green-700 hover:bg-green-50 shadow-sm transition-all"
+                >
+                  <ArrowDownToLine className="w-4 h-4" />
+                  تصدير إلى Excel
+                </Button>
+              )}
               <Link href="/assets/import">
                 <Button variant="secondary" className="flex items-center gap-2 border border-blue-200 bg-white text-blue-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm transition-all">
                   <FileSpreadsheet className="w-4 h-4" />
@@ -222,6 +265,11 @@ function AssetsContent() {
                               <Button variant="secondary" className="flex items-center gap-1 font-semibold">
                                 <Eye className="w-4 h-4" />
                                 عرض
+                              </Button>
+                            </Link>
+                            <Link href={`/assets/${asset._id}/edit`}>
+                              <Button variant="secondary" className="flex items-center gap-1 font-semibold text-blue-700 hover:bg-blue-50 border-blue-200">
+                                <Edit className="w-4 h-4" />
                               </Button>
                             </Link>
                             <Button

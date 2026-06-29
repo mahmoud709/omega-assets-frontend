@@ -179,6 +179,11 @@ export default function AssetDetailPage() {
                       <p className="text-sm text-slate-500 font-medium mb-1">العهدة الحالية (المسؤول)</p>
                       <p className="text-lg font-bold text-slate-900">
                         {asset.currentCustodianId?.fullName || asset.custodianName || 'في المخزن'}
+                        {asset.custodianName && employees.find((emp: any) => emp.name === asset.custodianName)?.department && (
+                          <span className="text-sm text-slate-500 mr-2 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
+                            {employees.find((emp: any) => emp.name === asset.custodianName).department}
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
