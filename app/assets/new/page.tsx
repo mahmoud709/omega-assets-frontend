@@ -1,7 +1,7 @@
 'use client';
 
 import { useProtectedRoute } from '@/app/hooks/useProtected';
-import { useBulkCreateAssets, useProjects, useCategories, useEmployees, useCreateCategory } from '@/app/hooks/useApi';
+import { useProjects, useCategories, useAllEmployees, useBulkCreateAssets, useCreateCategory } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button } from '@/app/components';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -16,7 +16,7 @@ export default function NewAssetPage() {
   const [selectedProjectId, setSelectedProjectId] = useState('');
   
   const { data: categoriesData } = useCategories(selectedProjectId);
-  const { data: employeesData } = useEmployees(selectedProjectId);
+  const { data: employeesData } = useAllEmployees(selectedProjectId);
 
   const generateSN = () => `SN-${Math.floor(100000 + Math.random() * 900000)}`;
 

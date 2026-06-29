@@ -1,7 +1,7 @@
 'use client';
 
 import { useProtectedRoute } from '@/app/hooks/useProtected';
-import { useEmployees } from '@/app/hooks/useApi';
+import { useEmployees, useAllEmployees } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Loading } from '@/app/components';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -53,7 +53,7 @@ export default function EditAsset() {
     }
   }, [assetData]);
 
-  const { data: employeesData } = useEmployees(assetData?.asset?.projectId?._id);
+  const { data: employeesData } = useAllEmployees(assetData?.asset?.projectId?._id);
   const employees = employeesData?.data || [];
 
   const updateMutation = useMutation({

@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/app/context/auth';
-import { useAsset, useCustodyHistory, useTransferCustody, useEmployees, useProjects, useReportIssue, useMaintenanceTasks } from '@/app/hooks/useApi';
+import { useAsset, useCustodyHistory, useTransferCustody, useAllEmployees, useProjects, useReportIssue, useMaintenanceTasks } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading, Error } from '@/app/components';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -36,7 +36,7 @@ export default function AssetDetailPage() {
   const { data: projectsData, isLoading: projectsLoading } = useProjects(1, 100);
   const projects = projectsData?.data || [];
 
-  const { data: employeesData, isLoading: employeesLoading } = useEmployees(toProjectId);
+  const { data: employeesData, isLoading: employeesLoading } = useAllEmployees(toProjectId);
   const employees = employeesData?.data || [];
 
   const [showTransfer, setShowTransfer] = useState(false);
@@ -328,7 +328,9 @@ export default function AssetDetailPage() {
                           >
                             <option value="">إرجاع إلى المخزن</option>
                             {employees.map((emp: any) => (
-                              <option key={emp._id} value={emp.name}>{emp.name}</option>
+                              <option key={emp._id} value={emp.name}>
+                                {emp.name} {emp.isOffice ? '(مكتب/جهة)' : ''}
+                              </option>
                             ))}
                           </select>
                         </div>
