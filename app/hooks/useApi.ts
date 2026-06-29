@@ -142,6 +142,20 @@ export const useDeleteProject = () => {
   });
 };
 
+export const useUpdateEmployee = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const response = await api.put(`/employees/${id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      queryClient.invalidateQueries({ queryKey: ['employee'] });
+    },
+  });
+};
+
 export const useCategories = (projectId?: string) => {
   return useQuery({
     queryKey: ['categories', projectId],

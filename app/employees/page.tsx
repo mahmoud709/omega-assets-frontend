@@ -1,10 +1,10 @@
 'use client';
 
 import { useProtectedRoute } from '@/app/hooks/useProtected';
-import { useEmployees, useCreateEmployee, useProjects } from '@/app/hooks/useApi';
+import { useEmployees, useCreateEmployee, useUpdateEmployee, useProjects } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading } from '@/app/components';
 import { useState, useEffect } from 'react';
-import { Plus, Users, Trash2 } from 'lucide-react';
+import { Plus, Users, Trash2, Pencil, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EmployeesPage() {
@@ -29,6 +29,28 @@ export default function EmployeesPage() {
   const pagination = employeesData?.pagination || { total: 0, page: 1, pages: 1 };
 
   const createEmployee = useCreateEmployee();
+  const updateEmployee = useUpdateEmployee();
+
+  const [editingEmployee, setEditingEmployee] = useState<any>(null);
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingEmployee) return;
+    try {
+      await updateEmployee.mutateAsync({
+        id: editingEmployee._id,
+        data: {
+          name: editingEmployee.name,
+          department: editingEmployee.department,
+          projectId: editingEmployee.projectId,
+        }
+      });
+      setEditingEmployee(null);
+    } catch (error) {
+      console.error('Failed to update employee:', error);
+      alert('فشل في تحديث بيانات الموظف');
+    }
+  };
 
   useEffect(() => {
     if (projects.length === 1 && user?.siteId) {
@@ -215,11 +237,26 @@ export default function EmployeesPage() {
                       <TableCell className="text-slate-800">{emp.projectId?.name || 'غير معروف'}</TableCell>
                       <TableCell className="text-slate-600">{emp.department || 'غير متوفر'}</TableCell>
                       <TableCell>
-                        <Link href={`/employees/${emp._id}`}>
-                          <Button variant="primary" className="text-sm py-1.5 px-3 font-bold shadow-sm shadow-blue-500/30">
-                            كشف العهدة
+                        <div className="flex gap-2">
+                          <Link href={`/employees/${emp._id}`}>
+                            <Button variant="primary" className="text-sm py-1.5 px-3 font-bold shadow-sm shadow-blue-500/30">
+                              كشف العهدة
+                            </Button>
+                          </Link>
+                          <Button 
+                            variant="secondary" 
+                            className="text-sm py-1.5 px-2 bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            onClick={() => setEditingEmployee({
+                              _id: emp._id,
+                              name: emp.name,
+                              department: emp.department || '',
+                              projectId: emp.projectId?._id || '',
+                            })}
+                            title="تعديل البيانات"
+                          >
+                            <Pencil className="w-4 h-4" />
                           </Button>
-                        </Link>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -257,6 +294,65 @@ export default function EmployeesPage() {
             )}
           </CardBody>
         </Card>
+
+        {/* Edit Employee Modal */}
+        {editingEmployee && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4" dir="rtl">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b border-slate-100">
+                <h3 className="text-xl font-black text-slate-800">تعديل بيانات الموظف</h3>
+                <button onClick={() => setEditingEmployee(null)} className="text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">اسم الموظف *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingEmployee.name}
+                    onChange={(e) => setEditingEmployee({...editingEmployee, name: e.target.value})}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">القسم / الوظيفة</label>
+                  <input
+                    type="text"
+                    value={editingEmployee.department}
+                    onChange={(e) => setEditingEmployee({...editingEmployee, department: e.target.value})}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">المشروع التابع له *</label>
+                  <select
+                    required
+                    value={editingEmployee.projectId}
+                    onChange={(e) => setEditingEmployee({...editingEmployee, projectId: e.target.value})}
+                    disabled={user?.role !== 'admin'}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold disabled:opacity-50"
+                  >
+                    <option value="">اختر المشروع...</option>
+                    {projects.map((proj: any) => (
+                      <option key={proj._id} value={proj._id}>{proj.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                  <Button type="button" variant="secondary" onClick={() => setEditingEmployee(null)}>
+                    إلغاء
+                  </Button>
+                  <Button type="submit" variant="primary" disabled={updateEmployee.isPending}>
+                    {updateEmployee.isPending ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

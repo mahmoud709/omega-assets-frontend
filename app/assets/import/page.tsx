@@ -393,7 +393,7 @@ export default function ImportDocxPage() {
                                 onChange={(e) => updateAsset(i, 'custodianName', e.target.value)}
                                 className="w-full px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500"
                               >
-                                <option value="">بدون مسئول (مخزن)</option>
+                                <option value="">بدون مسئول</option>
                                 {employees.map((emp: any) => (
                                   <option key={emp._id} value={emp.name}>{emp.name}</option>
                                 ))}

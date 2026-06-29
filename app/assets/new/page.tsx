@@ -285,7 +285,7 @@ export default function NewAssetPage() {
                           disabled={!selectedProjectId}
                           className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm disabled:opacity-100 disabled:text-slate-900 disabled:bg-slate-100"
                         >
-                          <option value="" className="text-slate-900">اختر موظفاً (اختياري)</option>
+                          <option value="">بدون مسئول</option>
                           {employees.map((emp: any) => (
                             <option key={emp._id} value={emp.name} className="text-slate-900">{emp.name}</option>
                           ))}
