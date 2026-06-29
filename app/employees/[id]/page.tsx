@@ -71,23 +71,18 @@ export default function EmployeeCustodyReport() {
             {/* Header */}
             <div className="flex justify-between items-center border-b-2 border-slate-800 pb-6 mb-8" dir="rtl">
               {/* Right Side - Title */}
-              <div className="w-1/3 text-right">
-                <h1 className="text-3xl font-black text-slate-900 mb-2">كشف عهدة موظف</h1>
+              <div className="flex-1 text-right flex flex-col justify-center">
+                <h1 className="text-2xl font-bold text-slate-900 mb-1">كشف عهدة موظف</h1>
                 <p className="text-slate-500 font-medium text-sm">إقرار استلام عهد شخصية / مشاريع</p>
               </div>
               
-              {/* Center - Logo */}
-              <div className="w-1/3 flex justify-center items-center">
+              {/* Left Side - Logo */}
+              <div className="flex-1 flex justify-end items-center">
                 <img 
                   src="/logo.png" 
                   alt="Company Logo" 
                   className="h-20 object-contain"
                 />
-              </div>
-
-              {/* Left Side - Date */}
-              <div className="w-1/3 text-left">
-                <p className="text-slate-500 font-bold">{today}</p>
               </div>
             </div>
 
@@ -181,6 +176,11 @@ export default function EmployeeCustodyReport() {
                 </div>
               </div>
             )}
+
+            {/* Print Footer Date */}
+            <div className="hidden print:block mt-16 pt-4 border-t border-slate-200 text-left">
+              <p className="text-slate-400 font-mono text-sm">تاريخ الطباعة: {today}</p>
+            </div>
             
           </CardBody>
         </Card>
