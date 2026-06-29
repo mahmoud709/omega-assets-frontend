@@ -1,7 +1,7 @@
 'use client';
 
 import { useProtectedRoute } from '@/app/hooks/useProtected';
-import { useBulkCreateAssets, useProjects, useCategories, useCreateCategory } from '@/app/hooks/useApi';
+import { useBulkCreateAssets, useProjects, useCategories, useCreateCategory, useEmployees } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button } from '@/app/components';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -23,6 +23,9 @@ export default function ImportDocxPage() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const createCategory = useCreateCategory();
 
+  const { data: employeesData } = useEmployees(selectedProjectId);
+  const employees = employeesData?.data || [];
+
   const [parsedAssets, setParsedAssets] = useState<any[]>([]);
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState('');
@@ -39,6 +42,8 @@ export default function ImportDocxPage() {
     const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
     return str.replace(/[٠-٩]/g, (w) => arabicNumbers.indexOf(w).toString());
   };
+
+  const generateSN = () => `SN-${Math.floor(1000000 + Math.random() * 9000000)}`;
 
   const handleAddCategory = async () => {
     if (!newCategoryName.trim() || !selectedProjectId) return;
@@ -140,7 +145,10 @@ export default function ImportDocxPage() {
             unit: cells.length > 2 ? cells[actualNameIdx - 1]?.textContent?.trim() || 'عدد' : 'عدد', // Fallback
             quantity: quantity,
             notes: notes,
-            condition: condition
+            condition: condition,
+            serialNumber: generateSN(),
+            categoryId: '',
+            custodianName: '',
           });
         }
       });
@@ -162,6 +170,12 @@ export default function ImportDocxPage() {
     setParsedAssets(prev => prev.filter((_, i) => i !== indexToRemove));
   };
 
+  const updateAsset = (index: number, field: string, value: string) => {
+    const updated = [...parsedAssets];
+    updated[index][field] = value;
+    setParsedAssets(updated);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -181,12 +195,14 @@ export default function ImportDocxPage() {
       name: assetGroup.name,
       quantity: assetGroup.quantity,
       condition: assetGroup.condition,
+      serialNumber: assetGroup.serialNumber,
+      custodianName: assetGroup.custodianName,
+      categoryId: assetGroup.categoryId || selectedCategoryId,
       specifications: {
         'ملاحظات': assetGroup.notes || '',
         'الوحدة': assetGroup.unit || 'عدد'
       },
       projectId: selectedProjectId,
-      categoryId: selectedCategoryId,
     }));
 
     try {
@@ -330,8 +346,11 @@ export default function ImportDocxPage() {
                         <tr>
                           <th className="px-4 py-3 font-semibold text-center w-12">م</th>
                           <th className="px-4 py-3 font-semibold">الصنف</th>
-                          <th className="px-4 py-3 font-semibold text-center">الوحدة</th>
+                          <th className="px-4 py-3 font-semibold">الفئة</th>
                           <th className="px-4 py-3 font-semibold text-center">الرصيد</th>
+                          <th className="px-4 py-3 font-semibold">الرقم التسلسلي</th>
+                          <th className="px-4 py-3 font-semibold">المسئول عن العهده</th>
+                          <th className="px-4 py-3 font-semibold">الحالة</th>
                           <th className="px-4 py-3 font-semibold">الملاحظات</th>
                           <th className="px-4 py-3 font-semibold text-center w-12">حذف</th>
                         </tr>
@@ -341,14 +360,65 @@ export default function ImportDocxPage() {
                           <tr key={i} className="hover:bg-slate-50 transition-colors group/row">
                             <td className="px-4 py-3 font-medium text-slate-500 text-center bg-slate-50/50">{i + 1}</td>
                             <td className="px-4 py-3 font-bold text-slate-900">{asset.name}</td>
-                            <td className="px-4 py-3 text-slate-600 text-center">{asset.unit}</td>
-                            <td className="px-4 py-3 font-bold text-blue-700 text-center bg-blue-50/30">{asset.quantity}</td>
-                            <td className="px-4 py-3 text-slate-600">
-                              {asset.notes ? (
-                                <span className={asset.condition === 'needs_repair' ? 'text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded' : ''}>
-                                  {asset.notes}
-                                </span>
-                              ) : '-'}
+                            <td className="px-4 py-3">
+                              <select
+                                value={asset.categoryId || ''}
+                                onChange={(e) => updateAsset(i, 'categoryId', e.target.value)}
+                                className="w-full px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500"
+                              >
+                                <option value="">الفئة الافتراضية للملف</option>
+                                {Array.from(new Map(categories.map((c: any) => [c.name, c])).values()).map((c: any) => (
+                                  <option key={c._id} value={c._id}>{c.path}</option>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="px-4 py-3 font-bold text-blue-700 text-center bg-blue-50/30">{asset.quantity} {asset.unit}</td>
+                            <td className="px-4 py-3">
+                              <div className="flex gap-1 items-center">
+                                <input
+                                  type="text"
+                                  value={asset.serialNumber || ''}
+                                  onChange={(e) => updateAsset(i, 'serialNumber', e.target.value)}
+                                  placeholder="SN..."
+                                  className="w-full px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500"
+                                />
+                                <button type="button" onClick={() => updateAsset(i, 'serialNumber', generateSN())} className="text-blue-500 hover:text-blue-700 p-1" title="توليد رقم">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <select
+                                value={asset.custodianName || ''}
+                                onChange={(e) => updateAsset(i, 'custodianName', e.target.value)}
+                                className="w-full px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500"
+                              >
+                                <option value="">بدون مسئول (مخزن)</option>
+                                {employees.map((emp: any) => (
+                                  <option key={emp._id} value={emp.name}>{emp.name}</option>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="px-4 py-3">
+                              <select
+                                value={asset.condition}
+                                onChange={(e) => updateAsset(i, 'condition', e.target.value)}
+                                className={`w-full px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 ${asset.condition === 'needs_repair' ? 'text-orange-700 bg-orange-50 font-bold' : ''}`}
+                              >
+                                <option value="good">جيد</option>
+                                <option value="excellent">ممتاز</option>
+                                <option value="needs_repair">يحتاج صيانة</option>
+                                <option value="scrapped">تالف / خردة</option>
+                              </select>
+                            </td>
+                            <td className="px-4 py-3">
+                              <input
+                                type="text"
+                                value={asset.notes || ''}
+                                onChange={(e) => updateAsset(i, 'notes', e.target.value)}
+                                placeholder="ملاحظات..."
+                                className={`w-full px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 ${asset.condition === 'needs_repair' ? 'bg-orange-50 text-orange-700 font-medium' : ''}`}
+                              />
                             </td>
                             <td className="px-4 py-3 text-center">
                               <button

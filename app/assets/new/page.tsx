@@ -210,8 +210,8 @@ export default function NewAssetPage() {
                               setShowCategoryModal(true);
                             }}
                             disabled={!selectedProjectId}
-                            className="px-3 py-2.5 bg-slate-100 border border-slate-300 text-slate-700 hover:bg-slate-200 hover:text-blue-600 font-bold rounded-xl transition-all shadow-sm disabled:opacity-50"
-                            title="إضافة فئة جديدة"
+                            className={`px-3 py-2.5 border font-bold rounded-xl transition-all shadow-sm ${!selectedProjectId ? 'bg-slate-50 border-slate-200 text-slate-300 cursor-not-allowed' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 hover:text-blue-600'}`}
+                            title={!selectedProjectId ? '⚠️ يرجى اختيار المشروع من الأعلى أولاً لكي تتمكن من إضافة فئة' : 'إضافة فئة جديدة'}
                           >
                             <Plus className="w-5 h-5" />
                           </button>
@@ -221,14 +221,14 @@ export default function NewAssetPage() {
                       {/* Name */}
                       <div className="space-y-2 lg:col-span-1">
                         <label className="block text-sm font-semibold text-slate-700">
-                          اسم الأصل <span className="text-red-500">*</span>
+                          {categories.find((c: any) => c._id === asset.categoryId)?.name === 'مركبات' ? 'اسم المركبة / الموديل' : 'اسم الأصل'} <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={asset.name}
                           onChange={(e) => handleAssetChange(index, 'name', e.target.value)}
                           required
-                          placeholder="مثال: لابتوب ديل"
+                          placeholder={categories.find((c: any) => c._id === asset.categoryId)?.name === 'مركبات' ? 'مثال: تويوتا كورولا 2024' : 'مثال: لابتوب ديل'}
                           className="w-full px-4 py-2.5 bg-white border border-slate-300 text-slate-900 font-bold placeholder:text-slate-400 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
                         />
                       </div>
@@ -236,14 +236,14 @@ export default function NewAssetPage() {
                       {/* Serial Number */}
                       <div className="space-y-2 lg:col-span-1">
                         <label className="block text-sm font-semibold text-slate-700">
-                          الرقم التسلسلي
+                          {categories.find((c: any) => c._id === asset.categoryId)?.name === 'مركبات' ? 'رقم اللوحة / الشاسيه' : 'الرقم التسلسلي'}
                         </label>
                         <div className="relative">
                           <input
                             type="text"
                             value={asset.serialNumber}
                             onChange={(e) => handleAssetChange(index, 'serialNumber', e.target.value)}
-                            placeholder="مثال: SN-12345"
+                            placeholder={categories.find((c: any) => c._id === asset.categoryId)?.name === 'مركبات' ? 'مثال: أ ب ج - 1234' : 'مثال: SN-12345'}
                             className="w-full px-4 py-2.5 pl-12 bg-white border border-slate-300 text-slate-900 font-bold placeholder:text-slate-400 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
                           />
                           <button
