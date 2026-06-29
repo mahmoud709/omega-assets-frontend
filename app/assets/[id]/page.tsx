@@ -393,8 +393,8 @@ export default function AssetDetailPage() {
                         <TableCell className="font-medium text-slate-900">
                           {new Date(task.scheduledDate).toLocaleDateString('ar-EG')}
                         </TableCell>
-                        <TableCell className="text-slate-800 font-bold max-w-xs truncate" title={task.description}>
-                          {task.description}
+                        <TableCell className="text-slate-800 font-bold max-w-xs truncate">
+                          <span title={task.description}>{task.description}</span>
                         </TableCell>
                         <TableCell>
                           {task.status === 'completed' ? (
