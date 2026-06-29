@@ -1,7 +1,7 @@
 'use client';
 
 import { useProtectedRoute } from '@/app/hooks/useProtected';
-import { useEmployees, useCreateEmployee, useUpdateEmployee, useProjects } from '@/app/hooks/useApi';
+import { useEmployees, useAllEmployees, useCreateEmployee, useUpdateEmployee, useProjects } from '@/app/hooks/useApi';
 import { Card, CardHeader, CardTitle, CardBody, Button, Table, TableHead, TableBody, TableRow, TableCell, Loading } from '@/app/components';
 import { useState, useEffect } from 'react';
 import { Plus, Users, Trash2, Pencil, X } from 'lucide-react';
@@ -28,8 +28,11 @@ export default function EmployeesPage() {
   const employees = employeesData?.data || [];
   const pagination = employeesData?.pagination || { total: 0, page: 1, pages: 1 };
   
+  const { data: allEmployeesData } = useAllEmployees(filterProjectId || (user?.role !== 'admin' ? user?.siteId : undefined));
+  const allEmployees = allEmployeesData?.data || [];
+
   // Extract unique departments for the smart dropdown
-  const existingDepartments = Array.from(new Set(employees.map((emp: any) => emp.department).filter(Boolean)));
+  const existingDepartments = Array.from(new Set(allEmployees.map((emp: any) => emp.department).filter(Boolean)));
 
   const createEmployee = useCreateEmployee();
   const updateEmployee = useUpdateEmployee();
@@ -223,7 +226,7 @@ export default function EmployeesPage() {
                             />
                           </div>
                           <div className="flex flex-wrap gap-3 max-h-48 overflow-y-auto p-1">
-                            {employees
+                            {allEmployees
                               .filter((e: any) => !e.isOffice)
                               .filter((e: any) => !emp.memberSearch || e.name.includes(emp.memberSearch) || (e.department && e.department.includes(emp.memberSearch)))
                               .map((e: any) => (
@@ -446,7 +449,7 @@ export default function EmployeesPage() {
                       />
                     </div>
                     <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-1">
-                      {employees
+                      {allEmployees
                         .filter((e: any) => !e.isOffice)
                         .filter((e: any) => !editingEmployee.memberSearch || e.name.includes(editingEmployee.memberSearch) || (e.department && e.department.includes(editingEmployee.memberSearch)))
                         .map((e: any) => (

@@ -377,6 +377,19 @@ export const useEmployees = (projectId?: string, search?: string, page = 1, limi
   });
 };
 
+export const useAllEmployees = (projectId?: string) => {
+  return useQuery({
+    queryKey: ['all-employees', projectId],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (projectId) params.append('projectId', projectId);
+      params.append('limit', '1000'); // large limit to get all
+      const response = await api.get(`/employees?${params}`);
+      return response.data;
+    },
+  });
+};
+
 export const useCreateEmployee = () => {
   const queryClient = useQueryClient();
   return useMutation({
